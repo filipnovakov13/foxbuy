@@ -30,5 +30,4 @@ public class EmailVerificationRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification token");
         }
     }
-
 }
