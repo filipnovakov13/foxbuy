@@ -62,8 +62,8 @@ class UserServiceImpTest {
 
     @Test
     void isUsernameInUse() {
-        assertTrue(userService.isUsernameInUse("shimmy"));          // it is
-        assertTrue(userService.isUsernameInUse("Shimmy"));          // it is, ignoring case
+        assertTrue(userService.isUsernameInUse("shimmy"));              // it is
+        assertTrue(userService.isUsernameInUse("Shimmy"));              // it is, ignoring case
         assertFalse(userService.isUsernameInUse("test"));               // it is not
     }
 

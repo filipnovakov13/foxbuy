@@ -3,6 +3,7 @@ package com.blue.foxbuy;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ public class RegistrationControllerTest {
 
 
     @Test
-    public void registrationEndpoint() throws Exception {
+    public void registrationEndpointSuccessful() throws Exception {
         UserDTO userDTO = new UserDTO("shimmy", "Password1+-", "testing@gmail.com");
 
         mockMvc.perform(post("/registration")
@@ -50,5 +51,13 @@ public class RegistrationControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void registrationEndpointUnauthorized() throws Exception {
+        UserDTO userDTO = new UserDTO("shimmy", "password", "testing@gmail.com");
 
+        mockMvc.perform(post("/registration")
+                        .content(op.writeValueAsString(userDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
 }

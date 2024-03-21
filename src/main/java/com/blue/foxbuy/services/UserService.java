@@ -11,8 +11,7 @@ public interface UserService {
     boolean isEmailInUse(String email);
     User save(UserDTO userDTO);
 
-    String hashPassword(String password);
-    boolean isPasswordCorrect(String password, String hashedPassword);
+    String encodedPassword(String password);
 
-    boolean isEmailVerificationOff();
+    boolean isEmailVerificationOn();
 }

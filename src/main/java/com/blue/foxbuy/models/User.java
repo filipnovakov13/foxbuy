@@ -20,7 +20,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private boolean isEmailVerified;
+    private boolean emailVerified;
     private String emailVerificationToken;
 
     // constructor without manual setting up ID

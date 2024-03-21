@@ -18,10 +18,12 @@ public class UserServiceImp implements UserService {
 
     // dependencies
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // methods
@@ -54,31 +56,24 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User save(UserDTO userDTO) {                     // include password encoder Spring Security?
+    public User save(UserDTO userDTO) {
         User user = new User(
                 userDTO.getEmail(),
                 userDTO.getUsername(),
-                (hashPassword(userDTO.getPassword())),      // JCA, JCE, AES or Java KeyStore -> use BCrypt
-                isEmailVerificationOff(),
+                (encodedPassword(userDTO.getPassword())),
+                isEmailVerificationOn(),
                 UUID.randomUUID().toString()
         );
         return userRepository.save(user);
     }
 
     @Override
-    public String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
+    public String encodedPassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     @Override
-    public boolean isPasswordCorrect(String password, String hashedPassword) {
-        return BCrypt.checkpw(password, hashedPassword);
-    }
-
-    @Override
-    public boolean isEmailVerificationOff() {
-        // check if the functionality is on, then set it to false
-        // if not - set it to true
-        return true;
+    public boolean isEmailVerificationOn() {
+        return System.getenv().containsKey("verification");
     }
 }
