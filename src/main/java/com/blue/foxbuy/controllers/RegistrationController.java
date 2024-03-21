@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-
 
 @RestController
 public class RegistrationController {
@@ -33,7 +31,7 @@ public class RegistrationController {
         if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Username or email is already in use"));
         }
-        
+
         return ResponseEntity.ok().body(new UserResultDTO(userService.save(userDTO).getId().toString(), userDTO.getUsername()));
     }
 
