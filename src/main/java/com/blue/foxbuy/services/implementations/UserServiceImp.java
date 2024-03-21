@@ -11,19 +11,16 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.mindrot.jbcrypt.BCrypt;
 
 @Service
 public class UserServiceImp implements UserService {
 
     // dependencies
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImp(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     // methods
@@ -61,7 +58,7 @@ public class UserServiceImp implements UserService {
                 userDTO.getEmail(),
                 userDTO.getUsername(),
                 (encodedPassword(userDTO.getPassword())),
-                isEmailVerificationOn(),
+                emailVerificationStatus(),
                 UUID.randomUUID().toString()
         );
         return userRepository.save(user);
@@ -69,11 +66,14 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String encodedPassword(String password) {
-        return passwordEncoder.encode(password);
+        return password;
     }
 
     @Override
-    public boolean isEmailVerificationOn() {
-        return System.getenv().containsKey("verification");
+    public boolean emailVerificationStatus() {
+        if (System.getenv().get("verification") != null){               // if it's not empty -> it's turn on
+            return System.getenv().get("verification").equals("false"); // if it's false -> it's turn off, user should get true
+        }
+        return false;
     }
 }

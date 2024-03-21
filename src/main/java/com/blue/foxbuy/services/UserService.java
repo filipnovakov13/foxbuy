@@ -13,5 +13,5 @@ public interface UserService {
 
     String encodedPassword(String password);
 
-    boolean isEmailVerificationOn();
+    boolean emailVerificationStatus();
 }

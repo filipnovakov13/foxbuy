@@ -29,7 +29,7 @@ class UserServiceImpTest {
                 "shimmy",
                 "Password1+-",
                 "testing@seznam.cz",
-                true,
+                userService.isEmailVerificationOff(),
                 "emailToken"
         );
         userRepository.save(user);
@@ -72,5 +72,10 @@ class UserServiceImpTest {
         assertTrue(userService.isEmailInUse("testing@seznam.cz"));      // it is
         assertTrue(userService.isEmailInUse("Testing@seznam.cz"));      // it is, ignoring case
         assertFalse(userService.isEmailInUse("gay@seznam.cz"));         // it is not
+    }
+
+    @Test
+    void isEmailVerificationOff(){
+        assertFalse(userService.emailVerificationStatus());
     }
 }
