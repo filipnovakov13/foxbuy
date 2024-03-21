@@ -20,15 +20,15 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private boolean emailVerified;
+    private boolean emailVerification;
     private String emailVerificationToken;
 
     // constructor without manual setting up ID
-    public User(String username, String password, String email, boolean isEmailVerified, String emailVerificationToken) {
+    public User(String username, String password, String email, boolean emailVerification, String emailVerificationToken) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.isEmailVerified = isEmailVerified;
+        this.emailVerification = emailVerification;
         this.emailVerificationToken = emailVerificationToken;
     }
 }
