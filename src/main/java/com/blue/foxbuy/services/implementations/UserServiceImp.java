@@ -18,9 +18,12 @@ public class UserServiceImp implements UserService {
     // dependencies
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImp(UserRepository userRepository) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // methods
@@ -66,7 +69,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String encodedPassword(String password) {
-        return password;
+        return passwordEncoder.encode(password);
     }
 
     @Override
