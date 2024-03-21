@@ -45,22 +45,23 @@ public class UserServiceImp implements UserService {
 
     @Override
     public boolean isUsernameInUse(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsByUsernameIgnoreCase(username);
     }
 
     @Override
     public boolean isEmailInUse(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.existsByEmailIgnoreCase(email);
     }
 
     @Override
-    public User save(UserDTO userDTO) {
-        User user = new User();
-        user.setEmail(userDTO.getEmail());
-        user.setUsername(userDTO.getUsername());                  // include password encoder Spring Security?
-        user.setPassword(hashPassword(user.getPassword()));       // change!! JCA, JCE, AES or Java KeyStore -> use BCrypt
-        user.setEmailVerified(isEmailVerificationOff());
-        user.setEmailVerificationToken(UUID.randomUUID().toString());
+    public User save(UserDTO userDTO) {                     // include password encoder Spring Security?
+        User user = new User(
+                userDTO.getEmail(),
+                userDTO.getUsername(),
+                (hashPassword(userDTO.getPassword())),      // JCA, JCE, AES or Java KeyStore -> use BCrypt
+                isEmailVerificationOff(),
+                UUID.randomUUID().toString()
+        );
         return userRepository.save(user);
     }
 

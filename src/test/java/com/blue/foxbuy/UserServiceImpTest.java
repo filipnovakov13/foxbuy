@@ -42,7 +42,7 @@ class UserServiceImpTest {
 
     @Test
     void isEmailValid() {
-        assertFalse(userService.isEmailValid("testingidk.cz"));      // missing symbol @
+        assertFalse(userService.isEmailValid("testingidk.cz"));         // missing symbol @
         assertFalse(userService.isEmailValid("testing@idk.com."));      // ending with dot
 
         assertTrue(userService.isEmailValid("testing.testing@seznam.cz"));
@@ -62,13 +62,15 @@ class UserServiceImpTest {
 
     @Test
     void isUsernameInUse() {
-        assertTrue(userService.isUsernameInUse("shimmy"));      // it is
-        assertFalse(userService.isUsernameInUse("Shimmy"));     // it is not
+        assertTrue(userService.isUsernameInUse("shimmy"));          // it is
+        assertTrue(userService.isUsernameInUse("Shimmy"));          // it is, ignoring case
+        assertFalse(userService.isUsernameInUse("test"));               // it is not
     }
 
     @Test
     void isEmailInUse() {
         assertTrue(userService.isEmailInUse("testing@seznam.cz"));      // it is
+        assertTrue(userService.isEmailInUse("Testing@seznam.cz"));      // it is, ignoring case
         assertFalse(userService.isEmailInUse("gay@seznam.cz"));         // it is not
     }
 }
