@@ -22,8 +22,8 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Password or Username incorrect");
         }
 
-        String jwtToken = generateJwtToken(userDTO.getUsername());
-
-        return ResponseEntity.ok(new JwtResponse(jwtToken));
+        //String jwtToken = generateJwtToken(userDTO.getUsername());
+        //return ResponseEntity.ok(new JwtResponse(jwtToken));
+        return ResponseEntity.ok().body("Login successful");
     }
 }
