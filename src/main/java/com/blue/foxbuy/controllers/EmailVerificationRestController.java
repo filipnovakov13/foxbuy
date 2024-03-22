@@ -3,12 +3,10 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +21,7 @@ public class EmailVerificationRestController {
 
     @GetMapping("/verify-email")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        User user = userRepository.existsByEmailVerificationToken(token);
+        User user = userRepository.findUserByEmailVerificationToken(token);
 
         if (user != null) {
             user.setEmailVerified(true);

@@ -26,15 +26,20 @@ public class RegistrationController {
 
 
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserDTO userDTO) throws MessagingException {
-        if (!userService.isEmailValid(userDTO.getEmail()) || !userService.isPasswordValid(userDTO.getPassword())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Invalid Format"));
+    public ResponseEntity<?> registration(@RequestBody UserDTO userDTO) {
+        try {
+            if (!userService.isEmailValid(userDTO.getEmail()) || !userService.isPasswordValid(userDTO.getPassword())){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Invalid Format"));
+            }
+            if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username or email is already in use"));
+            }
+            return ResponseEntity.ok().body(new UserResultDTO(userService.save(userDTO).getId().toString(), userDTO.getUsername()));
+        } catch (MessagingException e) {
+            // Handle the exception here. For example, you could log it and return an internal server error response:
+            System.out.println("Messaging error during registration");
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred while processing your request. Please try again later."));
         }
-        if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Username or email is already in use"));
-        }
-
-        return ResponseEntity.ok().body(new UserResultDTO(userService.save(userDTO).getId().toString(), userDTO.getUsername()));
     }
-
 }
