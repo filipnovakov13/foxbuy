@@ -3,10 +3,10 @@ package com.blue.foxbuy.services;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
 
 @Service
 public class EmailService {
@@ -15,7 +15,6 @@ public class EmailService {
     // It automatically connects to the application.properties file and
     // derives the required web mail set up information, like smtp url,
     // username and password
-
     private JavaMailSender mailSender;
 
     @Autowired
@@ -42,20 +41,25 @@ public class EmailService {
     // mailSender.send(mimeMessage);
     //
     // Now compare it to the MimeMessageHelper:
-
-    public void sendEmail(String to, String subject, String htmlContent) throws MessagingException {
+    public void sendEmail(String to, String subject, String token, String username) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(htmlContent, true);
+        helper.setText("<p>Hi, " +
+                username +
+                "!</p><p>Thank you for choosing Foxbuy. You rock!</p><p>In order to verify your e-mail address, please, <a href=\"" +
+                System.getenv().get("homePageUrl") + "/verify-email/" +
+                token +
+                " \">" +
+                "click this link</a>.</p>", true);
 
         mailSender.send(message);
     }
 
-//  We can also send messages using SimpleMailMessage, but not HTMLs
-//  or messages that contain various attachments. This would be nice
-//  if we were trying to send really simple messages. Hence, the name.
+//      We can also send messages using SimpleMailMessage, but not HTMLs
+//      or messages that contain various attachments. This would be nice
+//      if we were trying to send really simple messages. Hence, the name.
 //    public void sendEmail(String to, String subject, String body) {
 //        SimpleMailMessage message = new SimpleMailMessage();
 //
