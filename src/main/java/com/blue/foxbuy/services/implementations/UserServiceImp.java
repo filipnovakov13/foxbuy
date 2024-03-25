@@ -86,4 +86,14 @@ public class UserServiceImp implements UserService {
         }
         return false;
     }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public User findByUsernameAndPassword(UserDTO userDTO) {
+        return userRepository.findByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword());
+    }
 }
