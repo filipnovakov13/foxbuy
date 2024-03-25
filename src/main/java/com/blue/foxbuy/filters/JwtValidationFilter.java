@@ -19,15 +19,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class JwtValidationFilter extends OncePerRequestFilter {
-    public static final String JWT_KEY = "jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4";
-    public static final String JWT_HEADER = "Authorization";
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader(JWT_HEADER);
+        String jwt = request.getHeader(System.getenv("JWT_HEADER"));
         if (jwt != null) {
             try {
-                SecretKey key = Keys.hmacShaKeyFor(JWT_KEY.getBytes(StandardCharsets.UTF_8));
+                SecretKey key = Keys.hmacShaKeyFor(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8));
 
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key)

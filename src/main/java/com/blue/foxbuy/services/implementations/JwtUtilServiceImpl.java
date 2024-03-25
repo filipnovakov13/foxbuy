@@ -12,9 +12,7 @@ import java.util.Date;
 
 @Service
 public class JwtUtilServiceImpl implements JwtUtilService {
-
-    public static final String JWT_KEY = "jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4";
-    SecretKey key = Keys.hmacShaKeyFor(JWT_KEY.getBytes(StandardCharsets.UTF_8));
+    SecretKey key = Keys.hmacShaKeyFor(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8));
     @Override
     public String generateJwtToken(String username) {
         Claims claims = Jwts.claims()
