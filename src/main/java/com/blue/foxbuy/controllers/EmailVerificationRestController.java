@@ -2,6 +2,8 @@ package com.blue.foxbuy.controllers;
 
 package com.blue.foxbuy.services.UserService;
 
+import com.blue.foxbuy.models.User;
+import com.blue.foxbuy.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -29,7 +29,7 @@ class UserServiceImpTest {
                 "shimmy",
                 "Password1+-",
                 "testing@seznam.cz",
-                userService.isEmailVerificationOff(),
+                userService.emailVerificationStatus(),
                 "emailToken"
         );
         userRepository.save(user);

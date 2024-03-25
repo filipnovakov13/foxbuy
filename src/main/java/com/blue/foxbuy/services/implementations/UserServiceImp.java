@@ -38,7 +38,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean isPasswordValid(String password) {   // https://www.geeksforgeeks.org/how-to-validate-a-password-using-regular-expressions-in-java/
+    public boolean isPasswordValid(String password) {
         String password_regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&!+=()]).{8,20}$";
         Pattern pattern = Pattern.compile(password_regex);
         Matcher matcher = pattern.matcher(password);

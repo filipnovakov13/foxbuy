@@ -3,7 +3,6 @@ package com.blue.foxbuy;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
