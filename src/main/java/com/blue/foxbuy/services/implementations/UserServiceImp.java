@@ -3,8 +3,10 @@ package com.blue.foxbuy.services.implementations;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
+import com.blue.foxbuy.services.EmailService;
 import com.blue.foxbuy.services.UserService;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +19,14 @@ public class UserServiceImp implements UserService {
 
     // dependencies
     private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+//    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImp(UserRepository userRepository/*, PasswordEncoder passwordEncoder*/, EmailService emailService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        /*this.passwordEncoder = passwordEncoder;*/
+        this.emailService = emailService;
     }
 
     // methods
@@ -56,21 +59,25 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User save(UserDTO userDTO) {
+    public User save(UserDTO userDTO) throws MessagingException {
         User user = new User(
                 userDTO.getEmail(),
                 userDTO.getUsername(),
-                (encodedPassword(userDTO.getPassword())),
+                /*(encodedPassword(*/userDTO.getPassword()/*))*/,
                 emailVerificationStatus(),
                 UUID.randomUUID().toString()
         );
+
+        if (!emailVerificationStatus()) {
+            emailService.sendEmail(userDTO.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), userDTO.getUsername());
+        }
         return userRepository.save(user);
     }
 
-    @Override
-    public String encodedPassword(String password) {
-        return passwordEncoder.encode(password);
-    }
+//    @Override
+//    public String encodedPassword(String password) {
+//        return passwordEncoder.encode(password);
+//    }
 
     @Override
     public boolean emailVerificationStatus() {
