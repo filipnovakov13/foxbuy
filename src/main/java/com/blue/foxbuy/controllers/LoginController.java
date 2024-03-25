@@ -2,6 +2,8 @@ package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
+import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
+import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,12 @@ public class LoginController {
 
     private final UserService userService;
 
+    private final JwtUtilService jwtUtilService;
+
     @Autowired
-    public LoginController(UserService userService) {
+    public LoginController(UserService userService, JwtUtilService jwtUtilService) {
         this.userService = userService;
+        this.jwtUtilService = jwtUtilService;
     }
 
     @PostMapping("/login")
@@ -29,12 +34,12 @@ public class LoginController {
         } else if (!userService.findByUsername(userDTO.getUsername()).isEmailVerified()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO(
                     "Email not verified, please check your spam folder or click the 'Resend email verification' button"));
-        } else if (userService.findByUsernameAndPassword(userDTO) == null) {
+        } else if (userService.findByUsernameAndPassword(userDTO).isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Password or Username incorrect"));
         }
 
-        //String jwtToken = generateJwtToken(userDTO.getUsername());
-        //return ResponseEntity.ok(new JwtResponse(jwtToken));
-        return ResponseEntity.ok().body("Login successful");
+        String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
+        return ResponseEntity.ok().body(new JwtResponseDTO(jwtToken));
+        //return ResponseEntity.ok().body("Login successful");
     }
 }
