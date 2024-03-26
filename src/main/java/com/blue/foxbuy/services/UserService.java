@@ -15,4 +15,8 @@ public interface UserService {
     /*String encodedPassword(String password);*/
 
     boolean emailVerificationStatus();
+
+    User findByUsername(String username);
+
+    User findByUsernameAndPassword(UserDTO userDTO);
 }
