@@ -1,8 +1,8 @@
 package com.blue.foxbuy.config;
 
 import com.blue.foxbuy.filters.JwtGenerationFilter;
-import com.blue.foxbuy.filters.JwtValidationFilter;
 import com.blue.foxbuy.filters.RequestValidationBeforeFilter;
+import com.blue.foxbuy.filters.JwtValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
