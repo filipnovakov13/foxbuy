@@ -31,6 +31,7 @@ class EmailVerificationRestControllerTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
         User user = new User(
                 "shimmy",
                 "Password1+-",
@@ -41,7 +42,7 @@ class EmailVerificationRestControllerTest {
     }
 
     @Test
-    public void verifyEmailWithValidToken() throws Exception {
+    public void verifyEmailControllerTest_validToken_returnEmailVerifiedTrue() throws Exception {
         mockMvc.perform(get("/verify-email")
                         .param("token", "emailToken"))
                 .andExpect(status().isOk())
@@ -49,5 +50,16 @@ class EmailVerificationRestControllerTest {
 
         User user = userRepository.findByUsername("shimmy");
         assertTrue(user.isEmailVerified());
+    }
+
+    @Test
+    public void verifyEmailControllerTest_invalidToken_returnEmailVerifiedFalse() throws Exception {
+        mockMvc.perform(get("/verify-email")
+                        .param("token", "wrongEmailToken"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().string("Invalid verification token"));
+
+        User user = userRepository.findByUsername("shimmy");
+        assertFalse(user.isEmailVerified());
     }
 }

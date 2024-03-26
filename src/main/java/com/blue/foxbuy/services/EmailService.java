@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.mail.SimpleMailMessage;
 
 @Service
 public class EmailService {
@@ -41,7 +40,7 @@ public class EmailService {
     // mailSender.send(mimeMessage);
     //
     // Now compare it to the MimeMessageHelper:
-    public void sendEmail(String to, String subject, String token, String username) throws MessagingException {
+    public void sendEmailVerification(String to, String subject, String token, String username) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
