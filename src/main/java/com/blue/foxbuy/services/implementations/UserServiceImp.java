@@ -4,13 +4,15 @@ import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.EmailService;
+import com.blue.foxbuy.services.TokenGenerationService;
 import com.blue.foxbuy.services.UserService;
 
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +22,15 @@ public class UserServiceImp implements UserService {
     // dependencies
     private final UserRepository userRepository;
     private final EmailService emailService;
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenGenerationService tokenGenerationService;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository/*, PasswordEncoder passwordEncoder*/, EmailService emailService) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, PasswordEncoder passwordEncoder1, TokenGenerationService tokenGenerationService) {
         this.userRepository = userRepository;
-        /*this.passwordEncoder = passwordEncoder;*/
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenGenerationService = tokenGenerationService;
     }
 
     // methods
@@ -61,23 +65,23 @@ public class UserServiceImp implements UserService {
     @Override
     public User save(UserDTO userDTO) throws MessagingException {
         User user = new User(
-                userDTO.getEmail(),
                 userDTO.getUsername(),
-                /*(encodedPassword(*/userDTO.getPassword()/*))*/,
+                encodedPassword(userDTO.getPassword()),
+                userDTO.getEmail(),
                 emailVerificationStatus(),
-                UUID.randomUUID().toString()
+                tokenGenerationService.tokenGeneration()
         );
 
         if (!emailVerificationStatus()) {
-            emailService.sendEmail(userDTO.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), userDTO.getUsername());
+            emailService.sendEmailVerification(user.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), user.getUsername());
         }
         return userRepository.save(user);
     }
 
-//    @Override
-//    public String encodedPassword(String password) {
-//        return passwordEncoder.encode(password);
-//    }
+    @Override
+    public String encodedPassword(String password) {
+        return passwordEncoder.encode(password);
+    }
 
     @Override
     public boolean emailVerificationStatus() {
@@ -93,7 +97,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User findByUsernameAndPassword(UserDTO userDTO) {
-        return userRepository.findByUsernameAndPassword(userDTO.getUsername(), userDTO.getPassword());
+    public Optional<User> findByUsernameAndPassword(UserDTO userDTO) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(userDTO.getUsername()));
+        if (user.isPresent() && passwordEncoder.matches(userDTO.getPassword(), user.get().getPassword())) {
+            return user;
+        }
+        return Optional.empty();
     }
 }

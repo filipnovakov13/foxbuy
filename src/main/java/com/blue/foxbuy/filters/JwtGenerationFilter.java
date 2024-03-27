@@ -18,15 +18,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class JwtGenerationFilter extends OncePerRequestFilter {
-
-    public static final String JWT_KEY = "jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4";
-    public static final String JWT_HEADER = "Authorization";
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            SecretKey key = Keys.hmacShaKeyFor(JWT_KEY.getBytes(StandardCharsets.UTF_8));
+            SecretKey key = Keys.hmacShaKeyFor(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8));
             String jwt = Jwts.builder()
                     .setIssuer("Foxbuy")
                     .setSubject("JWT")
@@ -34,7 +31,7 @@ public class JwtGenerationFilter extends OncePerRequestFilter {
                     .claim("authorities", authentication.getAuthorities())
                     .setIssuedAt(new Date())
                     .signWith(key).compact();
-            response.setHeader(JWT_HEADER, jwt);
+            response.setHeader(System.getenv("JWT_HEADER"), jwt);
         }
         filterChain.doFilter(request, response);
     }
