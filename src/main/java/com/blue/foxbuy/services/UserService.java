@@ -4,6 +4,8 @@ import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.User;
 import jakarta.mail.MessagingException;
 
+import java.util.Optional;
+
 public interface UserService {
 
     boolean isEmailValid(String email);
@@ -12,11 +14,11 @@ public interface UserService {
     boolean isEmailInUse(String email);
     User save(UserDTO userDTO) throws MessagingException;
 
-    /*String encodedPassword(String password);*/
+    String encodedPassword(String password);
 
     boolean emailVerificationStatus();
 
     User findByUsername(String username);
 
-    User findByUsernameAndPassword(UserDTO userDTO);
+    Optional<User> findByUsernameAndPassword(UserDTO userDTO);
 }
