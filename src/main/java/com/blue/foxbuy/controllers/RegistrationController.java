@@ -3,7 +3,6 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.UserResultDTO;
-import com.blue.foxbuy.services.EmailService;
 import com.blue.foxbuy.services.UserService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;

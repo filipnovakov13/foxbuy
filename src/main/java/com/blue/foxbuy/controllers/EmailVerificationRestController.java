@@ -26,19 +26,9 @@ public class EmailVerificationRestController {
         if (user != null) {
             user.setEmailVerified(true);
             userRepository.save(user);
-            return ResponseEntity.ok("Email verified successfully");
+            return ResponseEntity.ok("E-mail verified successfully");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification token");
         }
     }
-//
-//    @RequestMapping("/test")
-//    public String sendEmailTest() {
-//        try {
-//            emailService.sendEmail("arthurpoghosyan@gmail.com", "This is a test", "<h1>Hello World!</h1>");
-//        } catch (MessagingException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return "E-mail test message successfully sent to arthurpoghosyan@gmail.com!";
-//    }
 }

@@ -4,6 +4,7 @@ import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.EmailService;
+import com.blue.foxbuy.services.TokenGenerationService;
 import com.blue.foxbuy.services.UserService;
 
 import jakarta.mail.MessagingException;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,12 +23,14 @@ public class UserServiceImp implements UserService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenGenerationService tokenGenerationService;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, PasswordEncoder passwordEncoder1) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, PasswordEncoder passwordEncoder1, TokenGenerationService tokenGenerationService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
+        this.tokenGenerationService = tokenGenerationService;
     }
 
     // methods
@@ -67,11 +69,11 @@ public class UserServiceImp implements UserService {
                 encodedPassword(userDTO.getPassword()),
                 userDTO.getEmail(),
                 emailVerificationStatus(),
-                UUID.randomUUID().toString()
+                tokenGenerationService.tokenGeneration()
         );
 
         if (!emailVerificationStatus()) {
-            emailService.sendEmail(userDTO.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), userDTO.getUsername());
+            emailService.sendEmailVerification(user.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), user.getUsername());
         }
         return userRepository.save(user);
     }

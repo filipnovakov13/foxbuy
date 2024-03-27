@@ -1,8 +1,8 @@
 package com.blue.foxbuy.config;
 
 import com.blue.foxbuy.filters.JwtGenerationFilter;
-import com.blue.foxbuy.filters.JwtValidationFilter;
 import com.blue.foxbuy.filters.RequestValidationBeforeFilter;
+import com.blue.foxbuy.filters.JwtValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -25,7 +25,7 @@ public class SecurityConfig {
                 //.addFilterAfter(new JwtGenerationFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                       .requestMatchers("/registration", "/login").permitAll()
+                       .requestMatchers("/registration", "/login", "/verify-email").permitAll()
                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
             return http.build();
