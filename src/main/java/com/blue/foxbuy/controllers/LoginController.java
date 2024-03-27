@@ -3,16 +3,18 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
+import com.blue.foxbuy.models.DTOs.UserResultDTO;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class LoginController {
@@ -48,5 +50,25 @@ public class LoginController {
     @GetMapping("/test")
     public Authentication testing(Authentication authentication) {
         return authentication;
+    }
+
+    // username: adam021
+    // id: 1
+
+    @GetMapping("/testUserIdentity")
+    public ResponseEntity<?> testingUserIdentity(@RequestHeader(value="authorization", required = true) String authenticationHeader) {
+        Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
+
+        if (tokenDetails.get("valid").equals("false")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Provided token is invalid."));
+        }
+
+        String username = tokenDetails.get("username");
+        String userID = userService.findByUsername(username).getId().toString();
+
+        UserResultDTO userResultDTO = new UserResultDTO();
+        userResultDTO.setUsername(username);
+        userResultDTO.setId(userID);
+        return ResponseEntity.ok(userResultDTO);
     }
 }
