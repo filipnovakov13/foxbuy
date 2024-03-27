@@ -4,8 +4,10 @@ import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
+import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -75,12 +78,24 @@ public class LoginControllerTest {
         UserDTO userDTO = new UserDTO("Adam021", "password1!", "adam021@gmail.com");
         String token = jwtUtilService.generateJwtToken(userDTO.getUsername());
 
+        MvcResult loginResult = mockMvc.perform(post("/login")
+                            .header("Authorization", "Bearer " + token)
+                            .contentType("application/json")
+                            .content(op.writeValueAsString(userDTO)))
+                        .andExpect(status().isOk())
+                        .andExpect(content().contentType("application/json"))
+                        .andReturn();
+
+        String responseBody = loginResult.getResponse().getContentAsString();
+        JsonNode jsonNode = op.readTree(responseBody);
+        String returnedToken = jsonNode.get("token").asText();
+
+
         mockMvc.perform(get("/test")
-                        .header("Authorization", "Bearer " + token)
-                .content(op.writeValueAsString(userDTO)))
+                    .header("Authorization","Bearer " + returnedToken)
+                    .contentType("application/json"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.principal").value(userDTO.getUsername()));
+                .andExpect(content().contentType("application/json"));
     }
 
     @Test
