@@ -1,5 +1,6 @@
 package com.blue.foxbuy;
 
+import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.UserService;
@@ -30,7 +31,8 @@ class UserServiceImpTest {
                 "Password1+-",
                 "testing@seznam.cz",
                 userService.emailVerificationStatus(),
-                "emailToken"
+                "emailToken",
+                Role.USER
         );
         userRepository.save(user);
     }

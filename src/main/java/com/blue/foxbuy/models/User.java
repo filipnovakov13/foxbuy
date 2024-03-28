@@ -22,13 +22,15 @@ public class User {
     private String email;
     private boolean emailVerified;
     private String emailVerificationToken;
+    private Role role;
 
     // constructor without manual setting up ID
-    public User(String username, String password, String email, boolean emailVerified, String emailVerificationToken) {
+    public User(String username, String password, String email, boolean emailVerified, String emailVerificationToken, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.emailVerified = emailVerified;
         this.emailVerificationToken = emailVerificationToken;
+        this.role = role;
     }
 }
