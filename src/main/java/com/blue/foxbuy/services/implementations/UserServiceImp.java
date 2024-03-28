@@ -26,7 +26,7 @@ public class UserServiceImp implements UserService {
     private final TokenGenerationService tokenGenerationService;
 
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, PasswordEncoder passwordEncoder1, TokenGenerationService tokenGenerationService) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, TokenGenerationService tokenGenerationService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
@@ -45,7 +45,7 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public boolean isPasswordValid(String password) {   // https://www.geeksforgeeks.org/how-to-validate-a-password-using-regular-expressions-in-java/
+    public boolean isPasswordValid(String password) {
         String password_regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&!+=()]).{8,20}$";
         Pattern pattern = Pattern.compile(password_regex);
         Matcher matcher = pattern.matcher(password);
@@ -87,8 +87,9 @@ public class UserServiceImp implements UserService {
     public boolean emailVerificationStatus() {
         if (System.getenv().get("verification") != null){               // if it's not empty -> it's turn on
             return System.getenv().get("verification").equals("false"); // if it's false -> it's turn off, user should get true
+        } else {
+            return true;
         }
-        return false;
     }
 
     @Override
