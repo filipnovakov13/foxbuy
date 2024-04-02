@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                        .requestMatchers("/registration", "/login", "/verify-email").permitAll()
+                        // .requestMatchers("/test").hasRole("ADMIN")
                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
             return http.build();
