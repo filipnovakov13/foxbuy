@@ -55,7 +55,7 @@ public class LoginController {
     // username: adam021
     // id: 1
 
-    @GetMapping("/testUserIdentity")
+    @GetMapping("/auth")
     public ResponseEntity<?> testingUserIdentity(@RequestHeader(value="authorization", required = true) String authenticationHeader) {
         Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
 
