@@ -7,6 +7,7 @@ import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,8 @@ public class LoginController {
 
     @GetMapping("/test")
     public Authentication testing(Authentication authentication) {
+
+
         return authentication;
     }
 }

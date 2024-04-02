@@ -1,9 +1,11 @@
 package com.blue.foxbuy;
 
+import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.UserService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,5 +81,16 @@ class UserServiceImpTest {
     @Test
     void isEmailVerificationOff(){
         assertFalse(userService.emailVerificationStatus());
+    }
+
+    @Test
+    void isSavedUserAdmin() throws MessagingException {
+        userRepository.deleteAll();
+        UserDTO userDTO = new UserDTO(
+                "tom",
+                "Password1!",
+                "testing@testing.cz"
+        );
+        assertTrue(userService.save(userDTO).getRole().equals(Role.ADMIN));
     }
 }

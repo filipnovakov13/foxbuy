@@ -75,8 +75,7 @@ public class UserServiceImp implements UserService {
                 Role.USER
         );
 
-        List<User> users = userRepository.findAll();    // create my own in repo
-        if (users.isEmpty()){
+        if (userRepository.count() <= 0){
             user.setRole(Role.ADMIN);
         }
 
