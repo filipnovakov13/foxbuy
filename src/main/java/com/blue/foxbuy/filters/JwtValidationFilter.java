@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -40,7 +41,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                         .parseClaimsJws(jwt)
                         .getBody();
                 String username = String.valueOf(claims.get("sub"));
-                //String authorities = (String) claims.get("authorities");
+                authorities.add(new SimpleGrantedAuthority(claims.get("role").toString()));
                 Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {

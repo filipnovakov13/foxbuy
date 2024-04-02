@@ -1,6 +1,7 @@
 package com.blue.foxbuy.services.implementations;
 
 import com.blue.foxbuy.models.DTOs.UserDTO;
+import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.EmailService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,8 +71,13 @@ public class UserServiceImp implements UserService {
                 encodedPassword(userDTO.getPassword()),
                 userDTO.getEmail(),
                 emailVerificationStatus(),
-                tokenGenerationService.tokenGeneration()
+                tokenGenerationService.tokenGeneration(),
+                Role.USER
         );
+
+        if (userRepository.count() <= 0){
+            user.setRole(Role.ADMIN);
+        }
 
         if (!emailVerificationStatus()) {
             emailService.sendEmailVerification(user.getEmail(), "Foxbuy e-mail verification", user.getEmailVerificationToken(), user.getUsername());

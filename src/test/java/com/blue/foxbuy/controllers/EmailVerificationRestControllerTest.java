@@ -1,5 +1,6 @@
 package com.blue.foxbuy.controllers;
 
+import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.UserService;
@@ -37,7 +38,8 @@ class EmailVerificationRestControllerTest {
                 "Password1+-",
                 "testing@seznam.cz",
                 false,
-                "emailToken");
+                "emailToken",
+                Role.USER);
         userRepository.save(user);
     }
 
