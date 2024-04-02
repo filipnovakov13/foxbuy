@@ -34,8 +34,8 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO){
-        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()){
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
+        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()) {
             return ResponseEntity.badRequest().body(new ErrorDTO("Empty field/s"));
         } else if (userService.findByUsername(userDTO.getUsername()) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Username not found"));
@@ -58,11 +58,8 @@ public class LoginController {
         return authentication;
     }
 
-    // username: adam021
-    // id: 1
-
     @GetMapping("/auth")
-    public ResponseEntity<?> testingUserIdentity(@RequestHeader(value="authorization", required = true) String authenticationHeader) {
+    public ResponseEntity<?> testingUserIdentity(@RequestHeader(value = "authorization", required = true) String authenticationHeader) {
         Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
 
         if (tokenDetails.get("valid").equals("false")) {
