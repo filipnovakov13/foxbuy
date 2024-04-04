@@ -5,6 +5,7 @@ import com.blue.foxbuy.repositories.UserRepository;
 
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "E-mail verification")
 public class EmailVerificationRestController {
     private final UserRepository userRepository;
 
