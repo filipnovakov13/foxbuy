@@ -6,5 +6,8 @@ import com.blue.foxbuy.models.DTOs.AdDTO;
 public interface AdService {
     boolean isPriceValid(double price);
     boolean isZipcodeValid(int zipcode);
-    Ad save(AdDTO adDTO);
+
+    Ad saveAdDTO(AdDTO adDTO);
+
+    Ad saveAd(Ad ad);
 }

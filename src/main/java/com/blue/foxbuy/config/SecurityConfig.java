@@ -25,7 +25,7 @@ public class SecurityConfig {
                 //.addFilterAfter(new JwtGenerationFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
-                       .requestMatchers("/registration", "/login", "/verify-email", "/advertisement").permitAll()
+                       .requestMatchers("/registration", "/login", "/verify-email", "/advertisement/**").permitAll()
                         // .requestMatchers("/test").hasRole("ADMIN")
                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());

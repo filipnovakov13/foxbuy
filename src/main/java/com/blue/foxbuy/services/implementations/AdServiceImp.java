@@ -28,8 +28,13 @@ public class AdServiceImp implements AdService {
     }
 
     @Override
-    public Ad save(AdDTO adDTO) {
+    public Ad saveAdDTO(AdDTO adDTO) {
             Ad ad = new Ad(adDTO.getTitle(), adDTO.getDescription(), adDTO.getPrice(), adDTO.getZipcode());
             return adRepository.save(ad);
+    }
+
+    @Override
+    public Ad saveAd(Ad ad) {
+        return adRepository.save(ad);
     }
 }
