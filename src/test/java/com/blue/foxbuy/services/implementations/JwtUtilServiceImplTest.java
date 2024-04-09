@@ -1,5 +1,6 @@
 package com.blue.foxbuy.services.implementations;
 
+import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.JwtUtilService;
@@ -30,7 +31,8 @@ class JwtUtilServiceImplTest {
                 "Password1!",
                 "john@example.com",
                 true,
-                "emailToken");
+                "emailToken",
+                Role.USER);
         userRepository.save(user);
     }
 
