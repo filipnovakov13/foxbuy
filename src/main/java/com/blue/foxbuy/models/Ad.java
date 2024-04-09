@@ -18,11 +18,11 @@ public class Ad {
     private String title;
     private String description;
     private Date creationDate;
-    private int price;
+    private double price;
     private int zipcode;
+    private int categoryID;
 
-    public Ad(UUID id, String title, String description, Date creationDate, int price, int zipcode) {
-        this.id = UUID.randomUUID();
+    public Ad(String title, String description, double price, int zipcode) {
         this.title = title;
         this.description = description;
         this.creationDate = new Date();
