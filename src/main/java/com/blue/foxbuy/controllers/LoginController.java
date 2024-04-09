@@ -42,7 +42,7 @@ public class LoginController {
     @Operation(
             description = "Accepts form inputs (username and password)" +
                     " and checks for their validity",
-            summary = "Users redirected here upon registration",
+            summary = "User login endpoint",
             method = "POST",
             responses = {
                     @ApiResponse(responseCode = "400",
