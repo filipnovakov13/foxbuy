@@ -2,7 +2,6 @@ package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.DTOs.AdDTO;
-import com.blue.foxbuy.models.DTOs.AdResultDTO;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.services.AdService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,10 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -123,5 +120,4 @@ class AdvertisementRestControllerTest {
         List<Ad> ads = adRepository.findAll();
         assertThat(ads).hasSize(0);
     }
-
 }
