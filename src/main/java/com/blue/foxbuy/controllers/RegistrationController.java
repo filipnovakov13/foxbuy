@@ -74,10 +74,10 @@ public class RegistrationController {
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody UserDTO userDTO) {
         try {
-            if (!userService.isEmailValid(userDTO.getEmail()) || !userService.isPasswordValid(userDTO.getPassword())){
+            if (!userService.isEmailValid(userDTO.getEmail()) || !userService.isPasswordValid(userDTO.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Invalid Format"));
             }
-            if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())){
+            if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username or email is already in use"));
             }
             return ResponseEntity.ok().body(new UserResultDTO(userService.save(userDTO).getId().toString(), userDTO.getUsername()));

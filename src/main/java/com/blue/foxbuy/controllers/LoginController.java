@@ -3,8 +3,10 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
+import com.blue.foxbuy.models.DTOs.UserResultDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
+
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,10 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Login")
@@ -88,8 +91,8 @@ public class LoginController {
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO){
-        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()){
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
+        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()) {
             return ResponseEntity.badRequest().body(new ErrorDTO("Empty field/s"));
         } else if (userService.findByUsername(userDTO.getUsername()) == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Username not found"));
@@ -110,5 +113,22 @@ public class LoginController {
 
 
         return authentication;
+    }
+
+    @GetMapping("/auth")
+    public ResponseEntity<?> testingUserIdentity(@RequestHeader(value = "authorization", required = true) String authenticationHeader) {
+        Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
+
+        if (tokenDetails.get("valid").equals("false")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Provided token is invalid."));
+        }
+
+        String username = tokenDetails.get("username");
+        String userID = userService.findByUsername(username).getId().toString();
+
+        UserResultDTO userResultDTO = new UserResultDTO();
+        userResultDTO.setUsername(username);
+        userResultDTO.setId(userID);
+        return ResponseEntity.ok(userResultDTO);
     }
 }
