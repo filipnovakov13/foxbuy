@@ -29,11 +29,12 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/swagger-ui/index.html",
                                         "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/category").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
                         // .requestMatchers("/test").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAuthority("SCOPE_admin")
                         .requestMatchers(HttpMethod.PUT, "/api/category/**").hasAuthority("SCOPE_admin")
                         .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("SCOPE_admin")
+                        .requestMatchers(HttpMethod.GET, "/logs").hasAuthority("SCOPE_admin")
                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
             return http.build();
