@@ -25,7 +25,7 @@ public class User {
     private String emailVerificationToken;
     private Role role;
     private boolean banned;
-    private Date banDuration;
+    private Date banDate;
 
     // constructor without manual setting up ID
     public User(String username, String password, String email, boolean emailVerified, String emailVerificationToken, Role role) {
@@ -36,6 +36,6 @@ public class User {
         this.emailVerificationToken = emailVerificationToken;
         this.role = role;
         this.banned = false;
-        this.banDuration = null;
+        this.banDate = null;
     }
 }

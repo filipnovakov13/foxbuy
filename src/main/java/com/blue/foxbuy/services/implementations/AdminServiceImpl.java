@@ -34,7 +34,7 @@ public class AdminServiceImpl implements AdminService {
         User user = userOptional.get();
 
         user.setBanned(true);
-        user.setBanDuration(banDuration);
+        user.setBanDate(banDuration);
 
         return new BanResultDTO(user.getUsername(), banDuration);
     }

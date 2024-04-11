@@ -4,20 +4,19 @@ import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
 import com.blue.foxbuy.models.DTOs.UserResultDTO;
-import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
-import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -36,7 +35,7 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
         if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body(new ErrorDTO("Empty field/s"));
+            return ResponseEntity.badRequest().body(new ErrorDTO("Empty field(s)"));
         } else if (userService.findByUsername(userDTO.getUsername()) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Username not found"));
         } else if (!userService.findByUsername(userDTO.getUsername()).isEmailVerified()) {
@@ -44,6 +43,24 @@ public class LoginController {
                     "Email not verified, please check your spam folder or click the 'Resend email verification' button"));
         } else if (userService.findByUsernameAndPassword(userDTO).isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Password or Username incorrect"));
+        }
+
+        // Check whether the user has been banned
+        if (userService.findByUsername(userDTO.getUsername()).isBanned()) {
+            Date currentDate = new Date();
+            User user = userService.findByUsername(userDTO.getUsername());
+            Date banDate = user.getBanDate();
+
+            if (currentDate.compareTo(banDate) >= 0) {
+                user.setBanned(false);
+                user.setBanDate(null);
+                String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
+                return ResponseEntity.ok().body(new JwtResponseDTO(jwtToken));
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String banDateFormatted = dateFormat.format(banDate);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("Access denied. User has been banned until" + banDateFormatted + "."));
+            }
         }
 
         String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
