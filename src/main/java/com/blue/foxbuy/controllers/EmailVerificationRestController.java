@@ -3,8 +3,6 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 
-import com.blue.foxbuy.models.User;
-import com.blue.foxbuy.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
