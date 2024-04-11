@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface AdRepository extends JpaRepository<Ad, UUID> {
+    long countByOwner(UUID owner);
 }

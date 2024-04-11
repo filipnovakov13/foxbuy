@@ -21,12 +21,16 @@ public class Ad {
     private double price;
     private int zipcode;
     private int categoryID;
+    private UUID owner;
+    private boolean visible;
 
-    public Ad(String title, String description, double price, int zipcode) {
+    public Ad(String title, String description, double price, int zipcode, UUID owner) {
         this.title = title;
         this.description = description;
         this.creationDate = new Date();
         this.price = price;
         this.zipcode = zipcode;
+        this.owner = owner;
+        setVisible(true);
     }
 }

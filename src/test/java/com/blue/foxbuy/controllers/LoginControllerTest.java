@@ -1,4 +1,4 @@
-package com.blue.foxbuy;
+package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.repositories.UserRepository;
