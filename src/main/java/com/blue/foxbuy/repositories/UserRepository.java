@@ -1,6 +1,5 @@
 package com.blue.foxbuy.repositories;
 
-import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

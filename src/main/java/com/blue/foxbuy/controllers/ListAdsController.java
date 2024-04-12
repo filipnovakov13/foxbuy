@@ -1,33 +1,53 @@
 package com.blue.foxbuy.controllers;
 
 
+import com.blue.foxbuy.models.Ad;
+import com.blue.foxbuy.models.DTOs.AdDTO;
+import com.blue.foxbuy.models.DTOs.ErrorDTO;
+import com.blue.foxbuy.services.AdService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/list/advertisement")
+@AllArgsConstructor
+@RequestMapping("/advertisement")
 public class ListAdsController {
 
+    private final AdService adservice;
 
 
-
-
-    @GetMapping("/{id}")    // GET /advertisement /{id} – return one Ad by ID
-    public ResponseEntity<?> findOneAdByID(@RequestParam int id){
-
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findOneAdById(@PathVariable (required = false) final UUID id){
+        try {
+            return ResponseEntity.ok(adservice.getAdById(id));
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
     }
 
-    @GetMapping("")         // GET /advertisement?user=user123 (list ads for specific user)
-    public ResponseEntity<?> findAdsByUser(){
-
+    @GetMapping("")
+    public ResponseEntity<?> findAdsByUser(@RequestParam (required = false) final String username){
+        try {
+            return ResponseEntity.ok(adservice.getAdsByUser(username));
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
     }
 
 
-
-    @GetMapping("")         // GET /advertisement?category=2&page=1 (list ads using category ID and pagination.
-    // Page parameter is optional, by default is 1. Include parameters page and total_pages in response)
-    public ResponseEntity<?> findAdsByCategory(){
-
+    @GetMapping("")
+    public ResponseEntity<?> findAdsByCategory2(@RequestParam final int categoryId, @RequestParam (required = false, defaultValue = "1") final int page){
+        try {
+            return ResponseEntity.ok(adservice.getAdsByCategory(categoryId, page));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorDTO> throwCustomException(RuntimeException e){
+        return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+    }
 }

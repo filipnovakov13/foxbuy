@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +20,6 @@ import java.util.regex.Pattern;
 @Service
 public class UserServiceImp implements UserService {
 
-    // dependencies
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
@@ -35,7 +33,6 @@ public class UserServiceImp implements UserService {
         this.tokenGenerationService = tokenGenerationService;
     }
 
-    // methods
     @Override
     public boolean isEmailValid(String email) {
         String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"

@@ -1,20 +1,17 @@
 package com.blue.foxbuy.models;
 
-public enum Role {
-    ADMIN("Administrator"),
-    VIP_USER("VIP User"),
+import lombok.Getter;
 
-    USER("Regular User");
+@Getter
+public enum Role {
+    ADMIN("Administrator"),     // value 0
+    VIP_USER("VIP User"),       // value 1
+    USER("Regular User");       // value 2
 
     private final String description;
 
-    // Constructor
     Role(String description) {
         this.description = description;
     }
 
-    // Method to get the description
-    public String getDescription() {
-        return description;
-    }
 }
