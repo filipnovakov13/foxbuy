@@ -9,6 +9,7 @@ import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +38,23 @@ public class AdvertisementRestController {
         // First we retrieve the username of the user from the authentication object
         // that was created by the JWT validation filter. Then we get the user UUID
         // from the database and save it within the Ad object itself.
-        String username = authentication.getName();
+        String username;
+        try {
+            username = authentication.getName();
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Authentication error. Please, log out then log in and try again."));
+        }
+
         User user = userRepository.findByUsername(username);
 
         // Before creating the ad though, we check whether the user is an admin
         // a vip or has less than 3 ads created thus far. Only then will he receive
         // a 200 response otherwise
-        if (user.getRole().equals(Role.ADMIN) || user.getRole().equals((Role.VIP_USER)) || adService.canUserCreateAd(user.getId())) {
-            Ad savedAd = adService.saveAdDTO(adDTO, user.getId());
+        if (user.getRole().equals(Role.ADMIN) || user.getRole().equals((Role.VIP_USER)) || adService.canUserCreateAd(user)) {
+            Ad savedAd = adService.saveAdDTO(adDTO, user);
             return ResponseEntity.ok().body(new AdResultDTO(savedAd));
         } else
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("Non VIP or admin user has reached the maximum ad limit."));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("User has reached the maximum ad limit. Upgrade to VIP for unlimited ads."));
     }
 
     @PutMapping("/advertisement/{id}")
@@ -61,8 +68,13 @@ public class AdvertisementRestController {
 
         if (adOptional.isPresent()) {
             Ad ad = adOptional.get();
-            UUID adOwnerID = ad.getOwner();
-            String username = authentication.getName();
+            UUID adOwnerID = ad.getOwner().getId();
+            String username;
+            try {
+                username = authentication.getName();
+            } catch (NullPointerException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Authentication error. Please, log out then log in and try again."));
+            }
             User user = userRepository.findByUsername(username);
 
             if (user.getRole().equals(Role.ADMIN) || adOwnerID.equals(user.getId())) {
@@ -92,8 +104,13 @@ public class AdvertisementRestController {
 
         if (adOptional.isPresent()) {
             Ad ad = adOptional.get();
-            UUID adOwnerID = ad.getOwner();
-            String username = authentication.getName();
+            UUID adOwnerID = ad.getOwner().getId();
+            String username;
+            try {
+                username = authentication.getName();
+            } catch (NullPointerException e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Authentication error. Please, log out then log in and try again."));
+            }
             User user = userRepository.findByUsername(username);
 
             if (user.getRole().equals(Role.ADMIN) || adOwnerID.equals(user.getId())) {

@@ -2,6 +2,7 @@ package com.blue.foxbuy.services.implementations;
 
 import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.DTOs.AdDTO;
+import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.services.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class AdServiceImp implements AdService {
     }
 
     @Override
-    public Ad saveAdDTO(AdDTO adDTO, UUID owner) {
+    public Ad saveAdDTO(AdDTO adDTO, User owner) {
         Ad ad = new Ad(adDTO.getTitle(), adDTO.getDescription(), adDTO.getPrice(), adDTO.getZipcode(), owner);
         return adRepository.save(ad);
     }
@@ -30,8 +31,7 @@ public class AdServiceImp implements AdService {
     }
 
     @Override
-    public boolean canUserCreateAd(UUID userId) {
-        long adCount = adRepository.countByOwner(userId);
-        return adCount < 3;
+    public boolean canUserCreateAd(User user) {
+        return user.getAds().size() < 3;
     }
 }

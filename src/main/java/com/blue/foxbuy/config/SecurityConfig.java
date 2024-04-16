@@ -22,11 +22,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/registration", "/login", "/verify-email").permitAll()
-                        .requestMatchers("/test").hasRole("ADMIN")
-                        .requestMatchers("/user/**/ban").hasRole("ADMIN")
-                        .requestMatchers("/advertisement", "/advertisement/**").hasRole("ADMIN")
-                        .requestMatchers("/advertisement", "/advertisement/**").hasRole("VIP_USER")
-                        .requestMatchers("/advertisement", "/advertisement/**").hasRole("USER")
+                        .requestMatchers("/test", "/user/*/ban").hasRole("ADMIN")
+                        .requestMatchers("/advertisement", "/advertisement/**").hasAnyRole("ADMIN", "VIP_USER", "USER")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
