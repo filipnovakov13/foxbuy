@@ -13,9 +13,13 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +38,7 @@ public class AdvertisementRestController {
     }
 
     @PostMapping("/advertisement")
-    public ResponseEntity<?> adCreate(@RequestBody AdDTO adDTO, Authentication authentication) {
+    public ResponseEntity<?> adCreate(@Valid @RequestBody AdDTO adDTO, Authentication authentication) {
         // First we retrieve the username of the user from the authentication object
         // that was created by the JWT validation filter. Then we get the user UUID
         // from the database and save it within the Ad object itself.
@@ -119,5 +123,21 @@ public class AdvertisementRestController {
             } else
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("You are not authorized to delete this ad."));
         } else return ResponseEntity.notFound().build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+
+            errors.put(fieldName, errorMessage);
+        });
+
+        return errors;
     }
 }

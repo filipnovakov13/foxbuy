@@ -79,7 +79,7 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3);
 
         String adDTOJson = op.writeValueAsString(adDTO);
@@ -103,13 +103,13 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3);
         AdDTO updatedAdDTO = new AdDTO(
                 "Mock title update",
                 "Mock description update",
                 30001.00,
-                54321,
+                "54321",
                 1);
 
         Ad ad = adService.saveAdDTO(adDTO, user);
@@ -135,7 +135,7 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3
         );
 
@@ -159,7 +159,7 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3);
 
         // We proceed to save it thrice
@@ -195,7 +195,7 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3);
         // We create and save a second user
         User user2 = new User(
@@ -212,7 +212,7 @@ class AdvertisementRestControllerTest {
                 "Mock title update",
                 "Mock description update",
                 30001.00,
-                54321,
+                "54321",
                 1);
         // Here we save an ad as user no. 1
         Ad ad = adService.saveAdDTO(adDTO, user);
@@ -239,7 +239,7 @@ class AdvertisementRestControllerTest {
                 "Mock title",
                 "Mock description",
                 3000.00,
-                12345,
+                "12345",
                 3);
         User user2 = new User(
                 "mockuser2",

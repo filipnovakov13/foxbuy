@@ -22,15 +22,15 @@ public class Ad {
     private String description;
     private Date creationDate;
 //    @NotBlank(message = "Set a price, please.")
-    private double price;
+    private Double price;
 //    @NotBlank(message = "Include your zipcode, please.")
-    private int zipcode;
-    private int categoryID;
+    private String zipcode;
+    private Integer categoryID;
     @ManyToOne
     private User owner;
     private boolean visible;
 
-    public Ad(String title, String description, double price, int zipcode, User owner) {
+    public Ad(String title, String description, Double price, String zipcode, User owner) {
         this.title = title;
         this.description = description;
         this.creationDate = new Date();

@@ -12,9 +12,9 @@ public class AdResultDTO {
     private UUID id;
     private String title;
     private String description;
-    private double price;
-    private int zipcode;
-    private int categoryID;
+    private Double price;
+    private String zipcode;
+    private Integer categoryID;
 
     public AdResultDTO(Ad ad) {
         this.id = ad.getId();
