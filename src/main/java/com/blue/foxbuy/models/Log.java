@@ -20,8 +20,8 @@ public class Log {
     private String type;
     private String data;
 
-    public Log(LocalDateTime timestamp, String endpoint, String type, String data) {
-        this.timestamp = timestamp;
+    public Log(String endpoint, String type, String data) {
+        this.timestamp = LocalDateTime.now();
         this.endpoint = endpoint;
         this.type = type;
         this.data = data;
