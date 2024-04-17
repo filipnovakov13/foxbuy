@@ -111,4 +111,9 @@ public class UserServiceImp implements UserService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public void saveDirect(User user) {
+        userRepository.save(user);
+    }
 }

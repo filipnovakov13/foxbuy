@@ -1,7 +1,6 @@
 package com.blue.foxbuy.config;
 
 import com.blue.foxbuy.filters.JwtValidationFilter;
-import com.blue.foxbuy.models.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,9 +31,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**").permitAll()
                         .requestMatchers("/test", "/user/*/ban").hasRole("ADMIN")
                         .requestMatchers("/advertisement", "/advertisement/**").hasAnyRole("ADMIN", "VIP_USER", "USER")
-                        .requestMatchers(HttpMethod.POST, "/api/category").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasAuthority("SCOPE_admin")
-                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAuthority("SCOPE_admin")
+                        .requestMatchers(HttpMethod.POST, "/api/category").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();

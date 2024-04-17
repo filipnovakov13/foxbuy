@@ -6,6 +6,7 @@ import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
 import com.blue.foxbuy.models.DTOs.UserResultDTO;
 import com.blue.foxbuy.models.User;
 
+import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
 
@@ -32,13 +33,11 @@ import java.util.Map;
 @RestController
 @Tag(name = "Login")
 public class LoginController {
-
     private final UserService userService;
-
     private final JwtUtilService jwtUtilService;
 
     @Autowired
-    public LoginController(UserService userService, JwtUtilService jwtUtilService) {
+    public LoginController(UserService userService, JwtUtilService jwtUtilService, UserRepository userRepository) {
         this.userService = userService;
         this.jwtUtilService = jwtUtilService;
     }
@@ -105,14 +104,16 @@ public class LoginController {
         }
 
         // Check whether the user has been banned
-        if (userService.findByUsername(userDTO.getUsername()).isBanned()) {
-            Date currentDate = new Date();
-            User user = userService.findByUsername(userDTO.getUsername());
-            Date banDate = user.getBanDate();
+        User user = userService.findByUsername(userDTO.getUsername());
 
-            if (currentDate.compareTo(banDate) >= 0) {
+        if (user.isBanned()) {
+            Date banDate = user.getBanDate();
+            Date currentDate = new Date();
+
+            if (currentDate.after(banDate)) {
                 user.setBanned(false);
                 user.setBanDate(null);
+                userService.saveDirect(user);
                 String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
                 return ResponseEntity.ok().body(new JwtResponseDTO(jwtToken));
             } else {
