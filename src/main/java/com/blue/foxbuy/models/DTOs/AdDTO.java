@@ -16,7 +16,7 @@ public class AdDTO {
     @Valid
 
     @NotBlank(message = "Add a title")
-    @Size(min = 5, max = 200, message = "The description must be between 5 and 200 characters long")
+    @Size(min = 5, max = 200, message = "The title must be between 5 and 200 characters long")
     private String title;
 
     @NotBlank(message = "Write out a description")
