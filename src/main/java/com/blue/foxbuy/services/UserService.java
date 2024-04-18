@@ -14,6 +14,8 @@ public interface UserService {
     boolean isEmailInUse(String email);
     User save(UserDTO userDTO) throws MessagingException;
 
+    void saveDirect(User user);
+
     String encodedPassword(String password);
 
     boolean emailVerificationStatus();
