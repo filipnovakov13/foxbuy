@@ -15,9 +15,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-@Component
 public class LoggingFilter extends OncePerRequestFilter {
-    @Autowired
     private final LogRepository logRepository;
 
     public LoggingFilter(LogRepository logRepository) {
@@ -33,15 +31,10 @@ public class LoggingFilter extends OncePerRequestFilter {
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
         filterChain.doFilter(requestWrapper, responseWrapper);
-
         String requestBody = getStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding());
-        String responseBody = getStringValue(requestWrapper.getContentAsByteArray(), request.getCharacterEncoding());
 
         Log requestLog = new Log(request.getMethod() + " " + request.getRequestURI(), "INFO", requestBody);
         logRepository.save(requestLog);
-
-        Log responseLog = new Log(request.getMethod() + " " + request.getRequestURI(), "INFO", responseBody);
-        logRepository.save(responseLog);
 
         responseWrapper.copyBodyToResponse();
     }
@@ -53,5 +46,14 @@ public class LoggingFilter extends OncePerRequestFilter {
             e.printStackTrace();
         }
         return "";
+    }
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return true;
+    }
+
+    @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return true;
     }
 }
