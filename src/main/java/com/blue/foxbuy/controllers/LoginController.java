@@ -3,10 +3,13 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.JwtResponseDTO;
-import com.blue.foxbuy.models.Role;
+import com.blue.foxbuy.models.DTOs.UserResultDTO;
 import com.blue.foxbuy.models.User;
+
+import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,21 +23,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 
 @RestController
 @Tag(name = "Login")
 public class LoginController {
-
     private final UserService userService;
-
     private final JwtUtilService jwtUtilService;
 
     @Autowired
-    public LoginController(UserService userService, JwtUtilService jwtUtilService) {
+    public LoginController(UserService userService, JwtUtilService jwtUtilService, UserRepository userRepository) {
         this.userService = userService;
         this.jwtUtilService = jwtUtilService;
     }
@@ -42,7 +45,7 @@ public class LoginController {
     @Operation(
             description = "Accepts form inputs (username and password)" +
                     " and checks for their validity",
-            summary = "Users redirected here upon registration",
+            summary = "User login endpoint",
             method = "POST",
             responses = {
                     @ApiResponse(responseCode = "400",
@@ -88,9 +91,9 @@ public class LoginController {
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDTO userDTO){
-        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()){
-            return ResponseEntity.badRequest().body(new ErrorDTO("Empty field/s"));
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
+        if (userDTO.getUsername().isEmpty() || userDTO.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body(new ErrorDTO("Empty field(s)"));
         } else if (userService.findByUsername(userDTO.getUsername()) == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Username not found"));
         } else if (!userService.findByUsername(userDTO.getUsername()).isEmailVerified()) {
@@ -98,6 +101,26 @@ public class LoginController {
                     "Email not verified, please check your spam folder or click the 'Resend email verification' button"));
         } else if (userService.findByUsernameAndPassword(userDTO).isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Password or Username incorrect"));
+        }
+
+        // Check whether the user has been banned
+        User user = userService.findByUsername(userDTO.getUsername());
+
+        if (user.isBanned()) {
+            Date banDate = user.getBanDate();
+            Date currentDate = new Date();
+
+            if (currentDate.after(banDate)) {
+                user.setBanned(false);
+                user.setBanDate(null);
+                userService.saveDirect(user);
+                String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
+                return ResponseEntity.ok().body(new JwtResponseDTO(jwtToken));
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String banDateFormatted = dateFormat.format(banDate);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("Access denied. User has been banned until" + banDateFormatted + "."));
+            }
         }
 
         String jwtToken = jwtUtilService.generateJwtToken(userDTO.getUsername());
@@ -110,5 +133,22 @@ public class LoginController {
 
 
         return authentication;
+    }
+
+    @GetMapping("/auth")
+    public ResponseEntity<?> userIdentityCheck(@RequestHeader(value = "authorization", required = true) String authenticationHeader) {
+        Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
+
+        if (tokenDetails.get("valid").equals("false")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Provided token is invalid."));
+        }
+
+        String username = tokenDetails.get("username");
+        String userID = userService.findByUsername(username).getId().toString();
+
+        UserResultDTO userResultDTO = new UserResultDTO();
+        userResultDTO.setUsername(username);
+        userResultDTO.setId(userID);
+        return ResponseEntity.ok(userResultDTO);
     }
 }
