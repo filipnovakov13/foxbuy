@@ -36,10 +36,10 @@ public class SecurityConfig {
                                 "/swagger-ui/index.html",
                                 "/swagger-ui/**").permitAll()
                         .requestMatchers("/test", "/user/*/ban").hasRole("ADMIN")
-                        .requestMatchers("/advertisement", "/advertisement/**").hasAnyRole("ADMIN", "VIP_USER", "USER")
-                        .requestMatchers(HttpMethod.POST, "/api/category").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasRole("ADMIN")
+                        .requestMatchers("/advertisement", "/advertisement/**").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+                        .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
