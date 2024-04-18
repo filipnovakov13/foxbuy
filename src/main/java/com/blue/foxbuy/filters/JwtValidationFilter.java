@@ -1,7 +1,7 @@
 package com.blue.foxbuy.filters;
 
 import com.blue.foxbuy.models.User;
-import com.blue.foxbuy.services.UserService;
+import com.blue.foxbuy.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.List;
 
 public class JwtValidationFilter extends OncePerRequestFilter {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public JwtValidationFilter(UserService userService) {
-        this.userService = userService;
+    public JwtValidationFilter(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                 // We extract the username from JWT claims
                 String username = String.valueOf(claims.get("sub"));
 
-                User user = userService.findByUsername(username);
+                User user = userRepository.findByUsername(username);
 
                 // Then check if the user is banned
                 if (user.isBanned()) {
@@ -72,7 +72,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                         user.setBanned(false);
                         user.setBanDate(null);
                         // Save updated user info
-                        userService.saveDirect(user);
+                        userRepository.save(user);
                     }
                 }
 
@@ -80,6 +80,8 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                 authorities.add(new SimpleGrantedAuthority(claims.get("role").toString()));
                 Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (DisabledException ex) {
+                throw ex;
             } catch (Exception e) {
                 throw new BadCredentialsException("Invalid Token received");
             }
