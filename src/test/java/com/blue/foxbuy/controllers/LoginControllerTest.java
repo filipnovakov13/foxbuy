@@ -58,9 +58,9 @@ public class LoginControllerTest {
         UserDTO userDTO = new UserDTO("Adam021", "password1!", "adam021@gmail.com");
 
         mockMvc.perform(post("/login")
-                .content(op.writeValueAsString(userDTO))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .content(op.writeValueAsString(userDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+               .andExpect(status().isOk());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class LoginControllerTest {
         mockMvc.perform(post("/login")
                         .content(op.writeValueAsString(userDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+               .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -79,12 +79,12 @@ public class LoginControllerTest {
         String token = jwtUtilService.generateJwtToken(userDTO.getUsername());
 
         MvcResult loginResult = mockMvc.perform(post("/login")
-                            .header("Authorization", "Bearer " + token)
-                            .contentType("application/json")
-                            .content(op.writeValueAsString(userDTO)))
-                        .andExpect(status().isOk())
-                        .andExpect(content().contentType("application/json"))
-                        .andReturn();
+                                                .header("Authorization", "Bearer " + token)
+                                                .contentType("application/json")
+                                                .content(op.writeValueAsString(userDTO)))
+                                       .andExpect(status().isOk())
+                                       .andExpect(content().contentType("application/json"))
+                                       .andReturn();
 
         String responseBody = loginResult.getResponse().getContentAsString();
         JsonNode jsonNode = op.readTree(responseBody);
@@ -94,8 +94,8 @@ public class LoginControllerTest {
         mockMvc.perform(get("/test")
                     .header("Authorization","Bearer " + returnedToken)
                     .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"));
+               .andExpect(status().isOk())
+               .andExpect(content().contentType("application/json"));
     }
 
     @Test
@@ -103,6 +103,6 @@ public class LoginControllerTest {
         UserDTO userDTO = new UserDTO("Adam021", "password1!", "adam021@gmail.com");
         mockMvc.perform(get("/test")
                         .content(op.writeValueAsString(userDTO)))
-                .andExpect(status().isUnauthorized());
+               .andExpect(status().isUnauthorized());
     }
 }
