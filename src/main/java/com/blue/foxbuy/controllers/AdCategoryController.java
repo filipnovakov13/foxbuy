@@ -69,14 +69,8 @@ public class AdCategoryController {
     )
     @PostMapping
     @SecurityRequirement(name = "BearerToken")
-    public ResponseEntity<?> createCategory(@Valid @RequestBody AdCategoryDTO adCategoryDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
-            List<String> errors = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO(errors.toString()));
-        }
+    public ResponseEntity<?> createCategory(@Valid @RequestBody AdCategoryDTO adCategoryDTO) {
+
         AdCategory createdCategory;
         if (adCategoryService.doesCategoryExist(adCategoryDTO.getName())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Category already exists"));
@@ -119,18 +113,9 @@ public class AdCategoryController {
     )
     @PutMapping("/{id}")
     @SecurityRequirement(name = "BearerToken")
-    public ResponseEntity<?> updateCategory(
-                                            @Valid @RequestBody AdCategoryDTO adCategoryDTO,
-                                            BindingResult bindingResult,
-                                            @Parameter(name = "id", description = "Id of the category to be updated", example = "1") @PathVariable(value = "id") Integer id
-                                            ) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO(errors.toString()));
-        }
+    public ResponseEntity<?> updateCategory(@Valid @RequestBody AdCategoryDTO adCategoryDTO,
+                                            @Parameter(name = "id", description = "Id of the category to be updated", example = "1") @PathVariable(value = "id") Integer id) {
+
         AdCategory updatedCategory;
         if (!adCategoryService.doesCategoryExist(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Category does not exist"));

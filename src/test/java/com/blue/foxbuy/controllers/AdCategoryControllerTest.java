@@ -19,8 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,7 +63,7 @@ class AdCategoryControllerTest {
         mockMvc.perform(post("/category")
                         .content(op.writeValueAsString(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -75,12 +74,12 @@ class AdCategoryControllerTest {
         mockMvc.perform(post("/category")
                         .content(op.writeValueAsString(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(post("/category")
                         .content(op.writeValueAsString(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-               .andExpect(status().isConflict());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -114,6 +113,38 @@ class AdCategoryControllerTest {
 
         mockMvc.perform(put("/category/{id}", 2)
                         .content(op.writeValueAsString(updatedAdCategoryDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
+    void deleteCategorySuccessful() throws Exception {
+        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+
+        mockMvc.perform(post("/category")
+                        .content(op.writeValueAsString(adCategoryDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(delete("/category/{id}", 1)
+                        .content(op.writeValueAsString(adCategoryDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
+    void deleteCategoryUnsuccessful() throws Exception {
+        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+
+        mockMvc.perform(post("/category")
+                        .content(op.writeValueAsString(adCategoryDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(delete("/category/{id}", 2)
+                        .content(op.writeValueAsString(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
