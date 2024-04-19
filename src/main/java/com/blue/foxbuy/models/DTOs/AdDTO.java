@@ -1,19 +1,14 @@
 package com.blue.foxbuy.models.DTOs;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdDTO {
-
-    @Valid
 
     @NotBlank(message = "Add a title")
     @Size(min = 5, max = 200, message = "The title must be between 5 and 200 characters long")

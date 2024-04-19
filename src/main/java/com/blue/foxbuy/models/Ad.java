@@ -16,14 +16,10 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-//    @NotBlank(message = "Set a title, please.")
     private String title;
-//    @NotBlank(message = "Include a description, please.")
     private String description;
     private Date creationDate;
-//    @NotBlank(message = "Set a price, please.")
     private Double price;
-//    @NotBlank(message = "Include your zipcode, please.")
     private String zipcode;
     private Integer categoryID;
     @ManyToOne
