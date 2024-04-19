@@ -119,7 +119,7 @@ public class LoginController {
             } else {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String banDateFormatted = dateFormat.format(banDate);
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("Access denied. User has been banned until" + banDateFormatted + "."));
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO("Access denied. User has been banned until " + banDateFormatted + "."));
             }
         }
 

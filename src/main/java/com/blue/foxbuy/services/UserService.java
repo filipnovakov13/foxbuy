@@ -5,6 +5,7 @@ import com.blue.foxbuy.models.User;
 import jakarta.mail.MessagingException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserService {
 
