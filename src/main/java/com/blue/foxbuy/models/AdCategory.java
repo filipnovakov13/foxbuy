@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -22,9 +25,12 @@ public class AdCategory {
     private String name;
     @Schema(example = "Technical gizmos and gadgets")
     private String description;
+    @OneToMany(mappedBy = "adCategory", cascade = CascadeType.ALL)
+    private List<Ad> ads;
 
     public AdCategory(String name, String description) {
         this.name = name;
         this.description = description;
+        this.ads = new ArrayList<>();
     }
 }

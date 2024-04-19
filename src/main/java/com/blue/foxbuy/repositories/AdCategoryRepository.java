@@ -11,4 +11,6 @@ public interface AdCategoryRepository extends JpaRepository<AdCategory, Integer>
 
     boolean existsById(Integer id);
     AdCategory findAdCategoryById(Integer id);
+
+    AdCategory findAdCategoryByNameIgnoreCase(String name);
 }

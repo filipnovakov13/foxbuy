@@ -46,4 +46,14 @@ public class AdCategoryServiceImpl implements AdCategoryService {
         updatedCategory.setDescription(adCategoryDTO.getDescription());
         return adCategoryRepository.save(updatedCategory);
     }
+
+    @Override
+    public void deleteById(Integer id) {
+        adCategoryRepository.deleteById(id);
+    }
+
+    @Override
+    public AdCategory findCategoryByName(String name) {
+        return adCategoryRepository.findAdCategoryByNameIgnoreCase(name);
+    }
 }

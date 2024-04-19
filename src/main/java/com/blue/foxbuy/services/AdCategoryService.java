@@ -11,4 +11,8 @@ public interface AdCategoryService {
     AdCategory createCategory(AdCategoryDTO adCategoryDTO);
     AdCategory findCategoryById(Integer id);
     AdCategory updateCategory(Integer id, AdCategoryDTO adCategoryDTO);
+
+    void deleteById(Integer id);
+
+    AdCategory findCategoryByName(String name);
 }

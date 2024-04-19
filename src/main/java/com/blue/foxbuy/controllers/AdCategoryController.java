@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -118,9 +119,11 @@ public class AdCategoryController {
     )
     @PutMapping("/{id}")
     @SecurityRequirement(name = "BearerToken")
-    public ResponseEntity<?> updateCategory(@Parameter(name = "id", description = "Id of the category to be updated", example = "1") @PathVariable(value = "id") Integer id,
+    public ResponseEntity<?> updateCategory(
                                             @Valid @RequestBody AdCategoryDTO adCategoryDTO,
-                                            BindingResult bindingResult) {
+                                            BindingResult bindingResult,
+                                            @Parameter(name = "id", description = "Id of the category to be updated", example = "1") @PathVariable(value = "id") Integer id
+                                            ) {
         if (bindingResult.hasErrors()) {
             List<String> errors = new ArrayList<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -144,13 +147,6 @@ public class AdCategoryController {
             summary = "Endpoint for deleting ad categories. - Admin only",
             method = "DELETE",
             responses = {
-                    @ApiResponse(responseCode = "400",
-                            description = "Returned when the name is not present",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorDTO.class),
-                                    examples = @ExampleObject(value = "{'error' : '[List of errors displayed here]'}")
-                            )),
                     @ApiResponse(responseCode = "404",
                             description = "Returned when the category is not found",
                             content = @Content(
@@ -169,24 +165,25 @@ public class AdCategoryController {
     )
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "BearerToken")
-    public ResponseEntity<?> deleteCategory(@Parameter(name = "id", description = "Id of the category to be deleted", example = "1") @PathVariable Integer id,
-                                            @Valid @RequestBody AdCategoryDTO adCategoryDTO,
-                                            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO(errors.toString()));
-        }
+    public ResponseEntity<?> deleteCategory(@Parameter(name = "id", description = "Id of the category to be deleted", example = "1")
+                                            @PathVariable Integer id) {
+
         if (!adCategoryService.doesCategoryExist(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO("Category does not exist"));
+        } else if (adCategoryService.findCategoryById(id).getAds().isEmpty()) {
+            adCategoryService.deleteById(id);
+            return ResponseEntity.ok().body("Successfully deleted");
+        } else {
+            if (!adCategoryService.doesCategoryExist("Uncategorized")){
+                adCategoryService.createCategory(new AdCategoryDTO("Uncategorized", "Other"))
+                        .setAds(adCategoryService.findCategoryById(id).getAds());
+                adCategoryService.deleteById(id);
+                return ResponseEntity.ok().body("Successfully deleted");
+            }
+            adCategoryService.findCategoryByName("Uncategorized")
+                    .setAds(adCategoryService.findCategoryById(id).getAds());
+            adCategoryService.deleteById(id);
+            return ResponseEntity.ok().body("Successfully deleted");
         }
-        // if category does exist check if there are ads associated with it
-        // if yes then check if there is a category 'Uncategorized'
-        // if no create it
-        // move all the ads from the category to be deleted to 'Uncategorized'
-        // delete category
-        return ResponseEntity.ok("Successfully deleted");
     }
 }

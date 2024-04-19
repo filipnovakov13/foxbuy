@@ -27,7 +27,7 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtValidationFilter(userRepository), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                        .requestMatchers("/registration",
                                         "/login",
