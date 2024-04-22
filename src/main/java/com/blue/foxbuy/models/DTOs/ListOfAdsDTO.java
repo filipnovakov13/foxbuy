@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class ListOfAdsDTO {
     @Column(name = "total_pages")
     private int totalPages;
 
-    private List<AdDTO> ads;
+    private List<AdDTO> ads = new ArrayList<>();
 
     public void add(Ad ad) {
         AdDTO adDTO = new AdDTO(
@@ -25,7 +26,7 @@ public class ListOfAdsDTO {
                 ad.getDescription(),
                 ad.getPrice(),
                 ad.getZipcode(),
-                ad.getCategoryID()
+                ad.getAdCategory().getId()
         );
         this.ads.add(adDTO);
     }

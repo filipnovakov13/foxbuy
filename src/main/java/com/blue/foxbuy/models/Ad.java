@@ -35,4 +35,15 @@ public class Ad {
         this.owner = owner;
         setVisible(true);
     }
+
+    public Ad(String title, String description, Double price, String zipcode, User owner, AdCategory adCategory) {
+        this.title = title;
+        this.description = description;
+        this.creationDate = new Date();
+        this.price = price;
+        this.zipcode = zipcode;
+        this.owner = owner;
+        this.adCategory = adCategory;
+        setVisible(true);
+    }
 }

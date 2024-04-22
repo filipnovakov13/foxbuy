@@ -42,19 +42,21 @@ public class SecurityConfig {
                                 "/v3/api-docs/",
                                 "/swagger-ui/index.html",
                                 "/swagger-ui/",
-                                "/api/category")
+                                "/category")
                         .permitAll()
 
                         // Endpoints accessible by admins
                         .requestMatchers("/test",
                                 "/user/*/ban",
                                 "/logs",
-                                "/api/category",
-                                "/api/category/")
+                                "/category",
+                                "/category/**")
                         .hasAuthority("ADMIN")
 
                         // Specific access endpoints
-                        .requestMatchers("/advertisement", "/advertisement/").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/advertisement").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/advertisement/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/advertisement").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
                         .anyRequest()
                         .authenticated())
                 .httpBasic(Customizer.withDefaults());

@@ -13,9 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -89,8 +86,8 @@ public class AdvertisementRestController {
                 if (ad.getPrice() != (adDTO.getPrice())) {
                     ad.setPrice(adDTO.getPrice());
                 }
-                if (ad.getCategoryID() != adDTO.getCategoryID()) {
-                    ad.setCategoryID(adDTO.getCategoryID());
+                if (ad.getAdCategory().getId() != adDTO.getCategoryID()) {
+                    ad.getAdCategory().setId(adDTO.getCategoryID());
                 }
                 Ad savedAd = adService.saveAd(ad);
                 return ResponseEntity.ok().body(new AdResultDTO(savedAd));

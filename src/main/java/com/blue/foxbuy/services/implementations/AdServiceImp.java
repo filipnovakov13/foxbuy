@@ -42,12 +42,12 @@ public class AdServiceImp implements AdService {
     @Override
     public AdDTO getAdById(UUID id) {
         Ad ad = adRepository.findById(id).orElseThrow(() -> new RuntimeException("Ad not found based on ID."));
-        return new AdDTO(ad.getTitle(), ad.getDescription(), ad.getPrice(), ad.getZipcode(), ad.getCategoryID());
+        return new AdDTO(ad.getTitle(), ad.getDescription(), ad.getPrice(), ad.getZipcode(), ad.getAdCategory().getId());
     }
 
     @Override
     public ListOfAdsDTO getAdsByUser(String username) {
-        List<Ad> ads = adRepository.findAllByUser(username);
+        List<Ad> ads = adRepository.findAllByOwner_Username(username);
         ListOfAdsDTO list = new ListOfAdsDTO();
         for (Ad ad : ads){
             list.add(ad);
@@ -58,7 +58,7 @@ public class AdServiceImp implements AdService {
     @Override
     public ListOfAdsDTO getAdsByCategory(int categoryId, int page) {
         PageRequest pr = PageRequest.of(page, 10);
-        Page<Ad> tmp = adRepository.findAllByCategoryId(categoryId,pr);
+        Page<Ad> tmp = adRepository.findAllByAdCategory_Id(categoryId,pr);
         ListOfAdsDTO ads = new ListOfAdsDTO(tmp.getPageable().getPageNumber(), tmp.getTotalPages(), null);
         for (Ad ad : tmp.getContent()){
             ads.add(ad);

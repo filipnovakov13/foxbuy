@@ -1,8 +1,6 @@
 package com.blue.foxbuy.controllers;
 
 
-import com.blue.foxbuy.models.Ad;
-import com.blue.foxbuy.models.DTOs.AdDTO;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.services.AdService;
 import lombok.AllArgsConstructor;
@@ -27,7 +25,7 @@ public class ListAdsController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/user")
     public ResponseEntity<?> findAdsByUser(@RequestParam final String username){
         try {
             return ResponseEntity.ok(adservice.getAdsByUser(username));
@@ -36,8 +34,8 @@ public class ListAdsController {
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> findAdsByCategory(@RequestParam final int categoryId, @RequestParam (required = false, defaultValue = "1") final int page){
+    @GetMapping("/category")
+    public ResponseEntity<?> findAdsByCategory(@RequestParam final int categoryId, @RequestParam (required = false, defaultValue = "0") final int page){
         try {
             return ResponseEntity.ok(adservice.getAdsByCategory(categoryId, page));
         } catch (RuntimeException e) {
