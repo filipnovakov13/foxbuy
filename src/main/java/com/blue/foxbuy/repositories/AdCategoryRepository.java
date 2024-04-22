@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 public interface AdCategoryRepository extends JpaRepository<AdCategory, Integer> {
 
     boolean existsByNameIgnoreCase(String name);
-
     boolean existsById(Integer id);
     AdCategory findAdCategoryById(Integer id);
-
     AdCategory findAdCategoryByNameIgnoreCase(String name);
+    void save(String name);
 }

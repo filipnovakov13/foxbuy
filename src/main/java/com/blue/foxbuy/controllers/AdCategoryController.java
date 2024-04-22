@@ -1,9 +1,11 @@
 package com.blue.foxbuy.controllers;
 
+import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.AdCategory;
 import com.blue.foxbuy.models.DTOs.AdCategoryDTO;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.services.AdCategoryService;
+import com.blue.foxbuy.services.AdService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,12 +18,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,10 +28,12 @@ import java.util.List;
 public class AdCategoryController {
 
     private final AdCategoryService adCategoryService;
+    private final AdService adService;
 
     @Autowired
-    public AdCategoryController(AdCategoryService adCategoryService) {
+    public AdCategoryController(AdCategoryService adCategoryService, AdService adService) {
         this.adCategoryService = adCategoryService;
+        this.adService = adService;
     }
 
     @Operation(
@@ -114,7 +114,8 @@ public class AdCategoryController {
     @PutMapping("/{id}")
     @SecurityRequirement(name = "BearerToken")
     public ResponseEntity<?> updateCategory(@Valid @RequestBody AdCategoryDTO adCategoryDTO,
-                                            @Parameter(name = "id", description = "Id of the category to be updated", example = "1") @PathVariable(value = "id") Integer id) {
+                                            @Parameter(name = "id", description = "Id of the category to be updated", example = "1")
+                                            @PathVariable(value = "id") Integer id) {
 
         AdCategory updatedCategory;
         if (!adCategoryService.doesCategoryExist(id)) {
@@ -128,7 +129,8 @@ public class AdCategoryController {
     @Operation(
             description = "Checks to see if the category of the given ID exists, " +
             "if it does checks to see if there are any ads associated with it, " +
-            "if there are move all the ads to 'Uncategorized'.",
+            "if there are move all the ads to 'Uncategorized' and delete the category. " +
+            "If 'Uncategorized' doesn't exist, creates it, moves the ads and deletes the category.",
             summary = "Endpoint for deleting ad categories. - Admin only",
             method = "DELETE",
             responses = {
@@ -160,13 +162,14 @@ public class AdCategoryController {
             return ResponseEntity.ok().body("Successfully deleted");
         } else {
             if (!adCategoryService.doesCategoryExist("Uncategorized")){
-                adCategoryService.createCategory(new AdCategoryDTO("Uncategorized", "Other"))
-                        .setAds(adCategoryService.findCategoryById(id).getAds());
-                adCategoryService.deleteById(id);
-                return ResponseEntity.ok().body("Successfully deleted");
+                adCategoryService.createCategory(new AdCategoryDTO("Uncategorized", "Other"));
             }
-            adCategoryService.findCategoryByName("Uncategorized")
-                    .setAds(adCategoryService.findCategoryById(id).getAds());
+            List<Ad> ads = adCategoryService.findCategoryById(id).getAds();
+            AdCategory adCategory = adCategoryService.findCategoryByName("Uncategorized");
+            for (Ad ad : ads) {
+                ad.setAdCategory(adCategory);
+                adService.saveAd(ad);
+            }
             adCategoryService.deleteById(id);
             return ResponseEntity.ok().body("Successfully deleted");
         }

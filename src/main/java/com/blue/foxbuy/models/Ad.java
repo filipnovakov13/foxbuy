@@ -1,7 +1,6 @@
 package com.blue.foxbuy.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +20,6 @@ public class Ad {
     private Date creationDate;
     private Double price;
     private String zipcode;
-    private Integer categoryID;
     @ManyToOne
     private User owner;
     @ManyToOne

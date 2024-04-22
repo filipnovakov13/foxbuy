@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdCategoryServiceImpl implements AdCategoryService {
 
-
     private final AdCategoryRepository adCategoryRepository;
 
     @Autowired
