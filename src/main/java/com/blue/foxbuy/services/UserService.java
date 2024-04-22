@@ -5,6 +5,7 @@ import com.blue.foxbuy.models.User;
 import jakarta.mail.MessagingException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -13,6 +14,8 @@ public interface UserService {
     boolean isUsernameInUse(String username);
     boolean isEmailInUse(String email);
     User save(UserDTO userDTO) throws MessagingException;
+
+    void saveDirect(User user);
 
     String encodedPassword(String password);
 

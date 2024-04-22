@@ -2,14 +2,14 @@ package com.blue.foxbuy.services;
 
 import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.DTOs.AdDTO;
-import com.blue.foxbuy.models.DTOs.ListOfAdsDTO;
-import org.springframework.data.domain.Page;
-import java.util.List;
+import com.blue.foxbuy.models.User;
+
 import java.util.UUID;
 
 public interface AdService {
+    Ad saveAdDTO(AdDTO adDTO, User owner);
 
-    AdDTO getAdById(UUID id);
-    ListOfAdsDTO getAdsByCategory(int categoryId, int page);
-    List<AdDTO> getAdsByUser(String username);
+    Ad saveAd(Ad ad);
+
+    boolean canUserCreateAd(User user);
 }

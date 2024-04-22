@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,7 +73,7 @@ public class UserServiceImp implements UserService {
                 Role.USER
         );
 
-        if (userRepository.count() <= 0){
+        if (userRepository.count() <= 0) {
             user.setRole(Role.ADMIN);
         }
 
@@ -89,7 +90,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public boolean emailVerificationStatus() {
-        if (System.getenv().get("verification") != null){               // if it's not empty -> it's turn on
+        if (System.getenv().get("verification") != null) {               // if it's not empty -> it's turn on
             return System.getenv().get("verification").equals("false"); // if it's false -> it's turn off, user should get true
         } else {
             return true;
@@ -108,5 +109,10 @@ public class UserServiceImp implements UserService {
             return user;
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void saveDirect(User user) {
+        userRepository.save(user);
     }
 }

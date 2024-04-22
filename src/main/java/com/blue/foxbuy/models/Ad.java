@@ -1,11 +1,10 @@
 package com.blue.foxbuy.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,15 +19,20 @@ public class Ad {
     private String title;
     private String description;
     private Date creationDate;
-    private double price;
-    private int zipcode;
-    private int categoryID;
+    private Double price;
+    private String zipcode;
+    private Integer categoryID;
+    @ManyToOne
+    private User owner;
+    private boolean visible;
 
-    public Ad(String title, String description, double price, int zipcode) {
+    public Ad(String title, String description, Double price, String zipcode, User owner) {
         this.title = title;
         this.description = description;
         this.creationDate = new Date();
         this.price = price;
         this.zipcode = zipcode;
+        this.owner = owner;
+        setVisible(true);
     }
 }
