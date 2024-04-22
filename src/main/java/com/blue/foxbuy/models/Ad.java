@@ -1,7 +1,6 @@
 package com.blue.foxbuy.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,14 +17,13 @@ public class Ad {
     private UUID id;
     private String title;
     private String description;
-    @Column(name = "creation_date")
     private Date creationDate;
     private Double price;
     private String zipcode;
-    @Column(name = "category_id")
-    private Integer categoryID;
     @ManyToOne
     private User owner;
+    @ManyToOne
+    private AdCategory adCategory;
     private boolean visible;
 
     public Ad(String title, String description, Double price, String zipcode, User owner) {

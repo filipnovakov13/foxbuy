@@ -31,24 +31,32 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                // .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtValidationFilter(userRepository), BasicAuthenticationFilter.class)
                 .addFilterAfter(new LoggingFilter(logRepository), JwtValidationFilter.class)
-                .authorizeHttpRequests(requests -> requests
-                       .requestMatchers("/registration",
-                                        "/login",
-                                        "/verify-email",
-                                        "/advertisement",
-                                        "/v3/api-docs",
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/index.html",
-                                        "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
-                        // .requestMatchers("/test").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/logs").hasAuthority("ADMIN")
-                       .anyRequest().authenticated())
+                .authorizeHttpRequests((requests) -> requests
+                        // Endpoints accessible by everyone
+                        .requestMatchers("/registration",
+                                "/login",
+                                "/verify-email",
+                                "/v3/api-docs",
+                                "/v3/api-docs/",
+                                "/swagger-ui/index.html",
+                                "/swagger-ui/",
+                                "/api/category")
+                        .permitAll()
+
+                        // Endpoints accessible by admins
+                        .requestMatchers("/test",
+                                "/user/*/ban",
+                                "/logs",
+                                "/api/category",
+                                "/api/category/")
+                        .hasAuthority("ADMIN")
+
+                        // Specific access endpoints
+                        .requestMatchers("/advertisement", "/advertisement/").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+                        .anyRequest()
+                        .authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
