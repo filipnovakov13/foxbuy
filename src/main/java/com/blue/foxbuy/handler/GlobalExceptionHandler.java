@@ -1,4 +1,4 @@
-package com.blue.foxbuy.controllers;
+package com.blue.foxbuy.handler;
 
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import io.jsonwebtoken.ExpiredJwtException;

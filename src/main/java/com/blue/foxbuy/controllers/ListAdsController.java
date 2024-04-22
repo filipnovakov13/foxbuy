@@ -27,8 +27,8 @@ public class ListAdsController {
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> findAdsByUser(@RequestParam (required = false) final String username){
+    @GetMapping
+    public ResponseEntity<?> findAdsByUser(@RequestParam final String username){
         try {
             return ResponseEntity.ok(adservice.getAdsByUser(username));
         } catch (RuntimeException e){
@@ -36,9 +36,8 @@ public class ListAdsController {
         }
     }
 
-
     @GetMapping("")
-    public ResponseEntity<?> findAdsByCategory2(@RequestParam final int categoryId, @RequestParam (required = false, defaultValue = "1") final int page){
+    public ResponseEntity<?> findAdsByCategory(@RequestParam final int categoryId, @RequestParam (required = false, defaultValue = "1") final int page){
         try {
             return ResponseEntity.ok(adservice.getAdsByCategory(categoryId, page));
         } catch (RuntimeException e) {

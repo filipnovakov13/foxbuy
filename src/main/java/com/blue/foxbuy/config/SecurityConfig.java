@@ -3,7 +3,6 @@ package com.blue.foxbuy.config;
 import com.blue.foxbuy.filters.JwtValidationFilter;
 import com.blue.foxbuy.filters.LoggingFilter;
 import com.blue.foxbuy.repositories.LogRepository;
-import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.blue.foxbuy.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -17,19 +16,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 public class SecurityConfig {
     private final UserRepository userRepository;
-
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     private final LogRepository logRepository;
     @Autowired
-    public SecurityConfig(LogRepository logRepository) {
+    public SecurityConfig(UserRepository userRepository, LogRepository logRepository) {
+        this.userRepository = userRepository;
         this.logRepository = logRepository;
     }
 
@@ -37,12 +31,13 @@ public class SecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
+                // .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new LoggingFilter(logRepository), JwtValidationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                        .requestMatchers("/registration",
                                         "/login",
                                         "/verify-email",
+                                        "/advertisement",
                                         "/v3/api-docs",
                                         "/v3/api-docs/**",
                                         "/swagger-ui/index.html",

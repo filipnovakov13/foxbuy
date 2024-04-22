@@ -23,7 +23,6 @@ public class ListOfAdsDTO {
         AdDTO adDTO = new AdDTO(
                 ad.getTitle(),
                 ad.getDescription(),
-                ad.getCreationDate(),
                 ad.getPrice(),
                 ad.getZipcode(),
                 ad.getCategoryID()

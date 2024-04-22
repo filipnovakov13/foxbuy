@@ -18,9 +18,11 @@ public class Ad {
     private UUID id;
     private String title;
     private String description;
+    @Column(name = "creation_date")
     private Date creationDate;
     private Double price;
     private String zipcode;
+    @Column(name = "category_id")
     private Integer categoryID;
     @ManyToOne
     private User owner;
