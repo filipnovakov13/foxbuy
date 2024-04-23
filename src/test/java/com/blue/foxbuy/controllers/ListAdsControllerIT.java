@@ -107,9 +107,10 @@ class ListAdsControllerIT {
 
     @Test
     void findAdsByCategory_successful() throws Exception {
+        AdCategory adCategory = adCategoryRepository.findAdCategoryByNameIgnoreCase("IT");
         mockMvc.perform(get("/advertisement/category")
-                .param("categoryId", "1")
-                .param("page", "0")
+                .param("categoryId", adCategory.getId().toString())
+                .param("page", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ads").isArray());

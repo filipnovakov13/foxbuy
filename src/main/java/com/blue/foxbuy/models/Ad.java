@@ -26,16 +26,6 @@ public class Ad {
     private AdCategory adCategory;
     private boolean visible;
 
-    public Ad(String title, String description, Double price, String zipcode, User owner) {
-        this.title = title;
-        this.description = description;
-        this.creationDate = new Date();
-        this.price = price;
-        this.zipcode = zipcode;
-        this.owner = owner;
-        setVisible(true);
-    }
-
     public Ad(String title, String description, Double price, String zipcode, User owner, AdCategory adCategory) {
         this.title = title;
         this.description = description;
