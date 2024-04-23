@@ -1,8 +1,10 @@
 package com.blue.foxbuy.config;
 
+import com.blue.foxbuy.filters.ExceptionHandlerFilter;
 import com.blue.foxbuy.filters.JwtValidationFilter;
 import com.blue.foxbuy.filters.LoggingFilter;
 import com.blue.foxbuy.repositories.LogRepository;
+import com.blue.foxbuy.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.blue.foxbuy.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -18,11 +20,13 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 public class SecurityConfig {
+    private final ConversionService conversionService;
     private final UserRepository userRepository;
     private final LogRepository logRepository;
 
     @Autowired
-    public SecurityConfig(UserRepository userRepository, LogRepository logRepository) {
+    public SecurityConfig(ConversionService conversionService, UserRepository userRepository, LogRepository logRepository) {
+        this.conversionService = conversionService;
         this.userRepository = userRepository;
         this.logRepository = logRepository;
     }
@@ -32,6 +36,7 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtValidationFilter(userRepository), BasicAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(conversionService), JwtValidationFilter.class)
                 .addFilterAfter(new LoggingFilter(logRepository), JwtValidationFilter.class)
                 .authorizeHttpRequests((requests) -> requests
                         // Endpoints accessible by everyone
@@ -42,18 +47,21 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/index.html",
                                 "/swagger-ui/**",
-                                "/api/category").permitAll()
+                                "/category")
+                        .permitAll()
 
                         // Endpoints accessible by admins
                         .requestMatchers("/test",
                                 "/user/*/ban",
                                 "/logs",
-                                "/api/category",
-                                "/api/category/**").hasAuthority("ADMIN")
+                                "/category",
+                                "/category/**")
+                        .hasAuthority("ADMIN")
 
                         // Specific access endpoints
                         .requestMatchers("/advertisement", "/advertisement/**").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
-                        .anyRequest().authenticated())
+                        .anyRequest()
+                        .authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
