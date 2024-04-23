@@ -1,9 +1,12 @@
 package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.Ad;
+import com.blue.foxbuy.models.AdCategory;
+import com.blue.foxbuy.models.DTOs.AdCategoryDTO;
 import com.blue.foxbuy.models.DTOs.AdDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
+import com.blue.foxbuy.repositories.AdCategoryRepository;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdService;
@@ -18,13 +21,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -43,6 +45,9 @@ class AdvertisementRestControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AdCategoryRepository adCategoryRepository;
 
     @Autowired
     AdService adService;
@@ -198,12 +203,12 @@ class AdvertisementRestControllerTest {
                 3);
         // We create and save a second user
         User user2 = new User(
-                        "mockuser2",
-                        "mockpassword",
-                        "mockemail2@example.com",
-                        true,
-                        "mocktoken",
-                        Role.USER);
+                "mockuser2",
+                "mockpassword",
+                "mockemail2@example.com",
+                true,
+                "mocktoken",
+                Role.USER);
 
         userRepository.save(user2);
 
@@ -259,5 +264,55 @@ class AdvertisementRestControllerTest {
         // Here we assert the ad hasn't been deleted
         List<Ad> ads = adRepository.findAll();
         assertThat(ads).hasSize(1);
+    }
+
+    @Test
+    public void listAdCategoriesTest_emptyExcluded_returnSuccessfulResponse() throws Exception {
+        AdCategory adCategory1 = new AdCategory();
+        AdCategory adCategory2 = new AdCategory();
+
+        adCategory1.setId(1);
+
+        adCategory2.setId(2);
+
+        adCategory1.setName("IT");
+
+        adCategory2.setName("Gadgets");
+
+        adCategory1.setDescription("Information technology listings");
+
+        adCategory2.setDescription("Wearable gadgets");
+
+        adCategoryRepository.save(adCategory1);
+
+        adCategoryRepository.save(adCategory2);
+
+        mockMvc.perform(get("/category"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void listAdCategoriesTest_emptyIncluded_returnSuccessfulResponse() throws Exception {
+        AdCategory adCategory1 = new AdCategory();
+        AdCategory adCategory2 = new AdCategory();
+
+        adCategory1.setId(1);
+
+        adCategory2.setId(2);
+
+        adCategory1.setName("IT");
+
+        adCategory2.setName("Gadgets");
+
+        adCategory1.setDescription("Information technology listings");
+
+        adCategory2.setDescription("Wearable gadgets");
+
+        adCategoryRepository.save(adCategory1);
+
+        adCategoryRepository.save(adCategory2);
+
+        mockMvc.perform(get("/category?empty=true"))
+                .andExpect(status().isOk());
     }
 }

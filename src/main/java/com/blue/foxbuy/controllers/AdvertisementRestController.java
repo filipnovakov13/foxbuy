@@ -1,14 +1,18 @@
 package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.Ad;
+import com.blue.foxbuy.models.AdCategory;
 import com.blue.foxbuy.models.DTOs.AdDTO;
 import com.blue.foxbuy.models.DTOs.AdResultDTO;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
+import com.blue.foxbuy.repositories.AdCategoryRepository;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdService;
+import com.blue.foxbuy.services.ConversionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,12 +28,16 @@ public class AdvertisementRestController {
     private final AdService adService;
     private final AdRepository adRepository;
     private final UserRepository userRepository;
+    private final ConversionService conversionService;
+    private final AdCategoryRepository adCategoryRepository;
 
     @Autowired
-    public AdvertisementRestController(AdService adService, AdRepository adRepository, UserRepository userRepository) {
+    public AdvertisementRestController(AdService adService, AdRepository adRepository, UserRepository userRepository, ConversionService conversionService, AdCategoryRepository adCategoryRepository) {
         this.adService = adService;
         this.adRepository = adRepository;
         this.userRepository = userRepository;
+        this.conversionService = conversionService;
+        this.adCategoryRepository = adCategoryRepository;
     }
 
     @PostMapping("/advertisement")
@@ -86,8 +94,8 @@ public class AdvertisementRestController {
                 if (ad.getPrice() != (adDTO.getPrice())) {
                     ad.setPrice(adDTO.getPrice());
                 }
-                if (ad.getCategoryID() != adDTO.getCategoryID()) {
-                    ad.setCategoryID(adDTO.getCategoryID());
+                if (ad.getAdCategory().getId() != adDTO.getCategoryID()) {
+                    ad.getAdCategory().setId(adDTO.getCategoryID());
                 }
                 Ad savedAd = adService.saveAd(ad);
                 return ResponseEntity.ok().body(new AdResultDTO(savedAd));
@@ -120,5 +128,18 @@ public class AdvertisementRestController {
         } else return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<?> listAdCategories(@RequestParam(name = "empty", defaultValue = "false") boolean empty) throws JsonProcessingException {
+        if (!empty) {
+            List<AdCategory> categories = adCategoryRepository.findAllCategoriesWithAds();
+            String categoriesJson = conversionService.convertObjectToJson(categories);
 
+            return ResponseEntity.ok().body(categoriesJson);
+        } else {
+            List<AdCategory> categories = adCategoryRepository.findAll();
+            String categoriesJson = conversionService.convertObjectToJson(categories);
+
+            return ResponseEntity.ok().body(categoriesJson);
+        }
+    }
 }

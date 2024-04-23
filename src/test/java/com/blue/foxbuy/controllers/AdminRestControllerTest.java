@@ -66,30 +66,17 @@ class AdminRestControllerTest {
                 true,
                 "mocktoken",
                 Role.USER));
-        usernameAdmin = "mockuser";
-        passwordAdmin = "mockpassword";
-        emailAdmin = "mockemail@example.com";
-        user = userRepository.save(new User(
-                usernameAdmin,
-                passwordAdmin,
-                emailAdmin,
-                true,
-                "mocktoken",
-                Role.ADMIN));
-
     }
 
     // User ban
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void banUserTest_validUser_returnSuccessfulReponse() throws Exception {
         BanDTO banDTO = new BanDTO();
 
         banDTO.setDuration(5);
-        System.out.println("/user/" + user.getId().toString() + "/ban" + " **********************************");
-        System.out.println(conversionService.convertObjectToJson(banDTO) + " **********************************");
 
         mockMvc.perform(post( "/user/" + user.getId() + "/ban")
-                        .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI6IkZveGJ1eSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcxMzg3Mjc0MywiZXhwIjoxNzEzODc2MzQzfQ.ReKfZNmTW67xsMaFuYaViWf1yH2tQQCGFhXKiEwQiq0")
                         .content(conversionService.convertObjectToJson(banDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
