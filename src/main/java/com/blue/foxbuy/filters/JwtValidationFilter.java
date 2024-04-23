@@ -1,7 +1,9 @@
 package com.blue.foxbuy.filters;
 
+import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
+import com.blue.foxbuy.services.ConversionService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -35,7 +37,7 @@ public class JwtValidationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain) throws ServletException, IOException, DisabledException, BadCredentialsException {
         String authHeader = request.getHeader("Authorization");
         String jwt = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -50,41 +52,36 @@ public class JwtValidationFilter extends OncePerRequestFilter {
                     .build()
                     .parseClaimsJws(jwt)
                     .getBody();
-            try {
-                // We extract the username from JWT claims
-                String username = String.valueOf(claims.get("sub"));
 
-                User user = userRepository.findByUsername(username);
+            // We extract the username from JWT claims
+            String username = String.valueOf(claims.get("sub"));
 
-                // Then check if the user is banned
-                if (user.isBanned()) {
-                    Date banDate = user.getBanDate();
-                    Date currentDate = new Date();
+            User user = userRepository.findByUsername(username);
 
-                    // Then double check if the ban has expired, if
-                    // not throw an exception
-                    if (currentDate.before(banDate)) {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        String banDateFormatted = dateFormat.format(banDate);
-                        throw new DisabledException("Access denied. This account has been banned until " + banDateFormatted + ". Please contact support if you require further assistance.");
-                    } else {
-                        // Remove ban if it has expired
-                        user.setBanned(false);
-                        user.setBanDate(null);
-                        // Save updated user info
-                        userRepository.save(user);
-                    }
+            // Then check if the user is banned
+            if (user.isBanned()) {
+                Date banDate = user.getBanDate();
+                Date currentDate = new Date();
+
+                // Then double check if the ban has expired, if
+                // not throw an exception
+                if (currentDate.before(banDate)) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String banDateFormatted = dateFormat.format(banDate);
+                    throw new DisabledException("Access denied. This account has been banned until " + banDateFormatted + ". Please contact support for assistance.");
+                } else {
+                    // Remove ban if it has expired
+                    user.setBanned(false);
+                    user.setBanDate(null);
+                    // Save updated user info
+                    userRepository.save(user);
                 }
-
-                // Authentication
-                authorities.add(new SimpleGrantedAuthority(claims.get("role").toString()));
-                Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (DisabledException ex) {
-                throw ex;
-            } catch (Exception e) {
-                throw new BadCredentialsException("Invalid Token received");
             }
+
+            // Authentication
+            authorities.add(new SimpleGrantedAuthority(claims.get("role").toString()));
+            Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);
     }
