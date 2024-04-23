@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
         info = @Info(
                 title = "Foxbuy API specification",
                 description = "OpenAPI documentation for Foxbuy application",
-                version = "1.0-pre_alpha2"
+                version = "1.0-pre_alpha4"
         ),
         servers = {
                 @Server(
