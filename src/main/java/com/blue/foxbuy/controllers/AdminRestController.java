@@ -5,9 +5,11 @@ import com.blue.foxbuy.models.DTOs.BanResultDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
@@ -24,7 +26,7 @@ public class AdminRestController {
     }
 
     @PostMapping("/user/{id}/ban")
-    public ResponseEntity<?> ban(@PathVariable UUID id, BanDTO banDTO) {
+    public ResponseEntity<?> ban(@PathVariable UUID id,@Valid @RequestBody BanDTO banDTO) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             BanResultDTO banResultDTO = adminService.banUser(banDTO, id);
