@@ -7,7 +7,7 @@ import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.AdRepository;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.blue.foxbuy.services.ConversionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -30,10 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 class AdvertisementRestControllerTest {
-
     // Wire everything and declare MockMvc
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    ConversionService conversionService;
 
     @Autowired
     AdRepository adRepository;
@@ -45,7 +48,6 @@ class AdvertisementRestControllerTest {
     AdService adService;
 
     // Declare the variables
-    private ObjectMapper op;
     String username;
     String password;
     String email;
@@ -66,9 +68,8 @@ class AdvertisementRestControllerTest {
                 email,
                 true,
                 "mocktoken",
-                Role.USER);
+                Role.ADMIN);
         userRepository.save(user);
-        op = new ObjectMapper();
     }
 
     // Ad creation test with a positive outcome
@@ -82,13 +83,15 @@ class AdvertisementRestControllerTest {
                 "12345",
                 3);
 
-        String adDTOJson = op.writeValueAsString(adDTO);
-
         // Here we check for an OK status
-        mockMvc.perform(post("/advertisement")
-                        .content(adDTOJson)
+        MvcResult result = mockMvc.perform(post("/advertisement")
+                        .content(conversionService.convertObjectToJson(adDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Check if the response is an ErrorDTO
+        String responseObject = result.getResponse().getContentAsString();
 
         // Here we check whether the ad has been saved to the database
         List<Ad> ads = adRepository.findAll();
@@ -113,11 +116,10 @@ class AdvertisementRestControllerTest {
                 1);
 
         Ad ad = adService.saveAdDTO(adDTO, user);
-        String updatedAdDTOJson = op.writeValueAsString(updatedAdDTO);
 
         // Here we check for an OK status
         mockMvc.perform(put("/advertisement/" + ad.getId())
-                        .content(updatedAdDTOJson)
+                        .content(conversionService.convertObjectToJson(updatedAdDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -173,13 +175,10 @@ class AdvertisementRestControllerTest {
 
         adService.saveAdDTO(adDTO3, user);
 
-        // We convert the AdDTO into a JSON with the object mapper
-        String adDTOJson = op.writeValueAsString(adDTO1);
-
         // Here we check for a forbidden status due to too many ads
         // created by user role "USER"
         mockMvc.perform(post("/advertisement")
-                        .content(adDTOJson)
+                        .content(conversionService.convertObjectToJson(adDTO1))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
 
@@ -216,13 +215,12 @@ class AdvertisementRestControllerTest {
                 1);
         // Here we save an ad as user no. 1
         Ad ad = adService.saveAdDTO(adDTO, user);
-        String updatedAdDTOJson = op.writeValueAsString(updatedAdDTO);
 
         // Here we check for an unauthorized status due to the user 2
         // not being the ad owner
         mockMvc.perform(put("/advertisement/" + ad.getId())
                         .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2NrdXNlcjIiLCJpc3MiOiJGb3hidXkiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MTMyOTU5NzYsImV4cCI6MTcxMzI5OTU3Nn0.dtcimY0sbdjEBA0AziOca99AZ1dvtuDxMVIvS365dXg")
-                        .content(updatedAdDTOJson)
+                        .content(conversionService.convertObjectToJson(updatedAdDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
@@ -232,7 +230,7 @@ class AdvertisementRestControllerTest {
         assertThat(savedMockAd.getTitle()).isNotEqualTo(updatedAdDTO.getTitle());
     }
 
-    // Ad deletion test with negative outcome due to user not being the ad owner
+    // Ad deletion test with a negative outcome due to user not being the ad owner
     @Test
     public void deleteAdControllerTest_validAd_returnUnauthorizedResponse() throws Exception {
         AdDTO adDTO = new AdDTO(
@@ -253,7 +251,7 @@ class AdvertisementRestControllerTest {
 
         Ad ad = adService.saveAdDTO(adDTO, user);
 
-        // Here we check for an OK status
+        // Here we check for a 401 status
         mockMvc.perform(delete("/advertisement/" + ad.getId())
                         .header("Authorization", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2NrdXNlcjIiLCJpc3MiOiJGb3hidXkiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MTMyOTU5NzYsImV4cCI6MTcxMzI5OTU3Nn0.dtcimY0sbdjEBA0AziOca99AZ1dvtuDxMVIvS365dXg"))
                 .andExpect(status().isUnauthorized());
