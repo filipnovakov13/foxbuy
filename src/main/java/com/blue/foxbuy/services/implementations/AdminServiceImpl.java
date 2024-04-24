@@ -26,7 +26,7 @@ public class AdminServiceImpl implements AdminService {
     public BanResultDTO banUser(BanDTO banDTO, UUID id) {
         Calendar calendar = Calendar.getInstance();
 
-        calendar.add(Calendar.DAY_OF_MONTH, 5);
+        calendar.add(Calendar.DAY_OF_MONTH, banDTO.getDuration());
 
         Date banDuration = calendar.getTime();
 
