@@ -27,35 +27,10 @@ public class SecurityConfig {
         this.userRepository = userRepository;
     }
 
-    private final LogRepository logRepository;
-    @Autowired
-    public SecurityConfig(LogRepository logRepository) {
-        this.logRepository = logRepository;
-    }
-
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
-<<<<<<< HEAD
-                .addFilterBefore(new JwtValidationFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new LoggingFilter(logRepository), JwtValidationFilter.class)
-                .authorizeHttpRequests(requests -> requests
-                       .requestMatchers("/registration",
-                                        "/login",
-                                        "/verify-email",
-                                        "/v3/api-docs",
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/index.html",
-                                        "/swagger-ui/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
-                        // .requestMatchers("/test").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/category/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/category/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/category").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/logs").hasAuthority("ADMIN")
-                       .anyRequest().authenticated())
-=======
                 .addFilterBefore(new JwtValidationFilter(userRepository), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
                        .requestMatchers("/registration",
@@ -72,7 +47,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
->>>>>>> master
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
