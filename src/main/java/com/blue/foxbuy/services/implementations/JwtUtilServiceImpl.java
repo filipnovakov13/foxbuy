@@ -1,6 +1,5 @@
 package com.blue.foxbuy.services.implementations;
 
-import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.services.JwtUtilService;
 import com.blue.foxbuy.services.UserService;

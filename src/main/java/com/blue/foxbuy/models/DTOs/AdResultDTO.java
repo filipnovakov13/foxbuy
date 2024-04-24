@@ -22,6 +22,6 @@ public class AdResultDTO {
         this.description = ad.getDescription();
         this.price = ad.getPrice();
         this.zipcode = ad.getZipcode();
-        this.categoryID = ad.getCategoryID();
+        this.categoryID = ad.getAdCategory().getId();
     }
 }

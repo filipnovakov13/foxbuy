@@ -60,8 +60,10 @@ public class SecurityConfig {
 
                         // Specific access endpoints
                         .requestMatchers("/advertisement", "/advertisement/**").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
-                        .anyRequest()
-                        .authenticated())
+                        .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }

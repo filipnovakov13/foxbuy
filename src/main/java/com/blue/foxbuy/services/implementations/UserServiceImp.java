@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 @Service
 public class UserServiceImp implements UserService {
 
-    // dependencies
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
@@ -35,7 +34,6 @@ public class UserServiceImp implements UserService {
         this.tokenGenerationService = tokenGenerationService;
     }
 
-    // methods
     @Override
     public boolean isEmailValid(String email) {
         String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"

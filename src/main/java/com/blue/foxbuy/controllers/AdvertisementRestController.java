@@ -86,8 +86,8 @@ public class AdvertisementRestController {
                 if (ad.getPrice() != (adDTO.getPrice())) {
                     ad.setPrice(adDTO.getPrice());
                 }
-                if (ad.getCategoryID() != adDTO.getCategoryID()) {
-                    ad.setCategoryID(adDTO.getCategoryID());
+                if (ad.getAdCategory().getId() != adDTO.getCategoryID()) {
+                    ad.getAdCategory().setId(adDTO.getCategoryID());
                 }
                 Ad savedAd = adService.saveAd(ad);
                 return ResponseEntity.ok().body(new AdResultDTO(savedAd));

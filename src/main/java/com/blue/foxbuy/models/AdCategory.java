@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class AdCategory {
     @Schema(example = "Technical gizmos and gadgets")
     private String description;
     @OneToMany(mappedBy = "adCategory", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Ad> ads;
 
     public AdCategory(String name, String description) {
