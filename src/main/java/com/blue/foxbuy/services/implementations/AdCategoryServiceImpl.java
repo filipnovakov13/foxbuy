@@ -7,6 +7,8 @@ import com.blue.foxbuy.services.AdCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AdCategoryServiceImpl implements AdCategoryService {
 
@@ -28,8 +30,9 @@ public class AdCategoryServiceImpl implements AdCategoryService {
     }
 
     @Override
-    public AdCategory createCategory(AdCategoryDTO adCategoryDTO) {
+    public AdCategory saveAdCategoryDTO(AdCategoryDTO adCategoryDTO) {
         AdCategory createdCategory = new AdCategory(adCategoryDTO.getName(), adCategoryDTO.getDescription());
+
         return adCategoryRepository.save(createdCategory);
     }
 
@@ -49,6 +52,16 @@ public class AdCategoryServiceImpl implements AdCategoryService {
     @Override
     public void deleteById(Integer id) {
         adCategoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<AdCategory> findAllCategoriesWithAds() {
+        return adCategoryRepository.findAllCategoriesWithAds();
+    }
+
+    @Override
+    public List<AdCategory> findAll() {
+        return adCategoryRepository.findAll();
     }
 
     @Override

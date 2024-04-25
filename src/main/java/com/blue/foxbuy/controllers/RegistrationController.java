@@ -3,6 +3,7 @@ package com.blue.foxbuy.controllers;
 import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
 import com.blue.foxbuy.models.DTOs.UserResultDTO;
+import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,12 +12,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
@@ -33,23 +37,31 @@ public class RegistrationController {
     @Operation(
             description = "Takes user input, validates its correctness and creates a new user." +
                     " The first user is by default an Admin.",
-            summary = "Responsible for creating new users.",
+            summary = "Registers new users.",
             method = "POST",
             responses = {
-                    @ApiResponse(responseCode = "401",
-                            description = "Returned when the email or password is not of the required format.",
+                    @ApiResponse(responseCode = "400",
+                            description = "Returned when the e-mail or password is not of the required format.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorDTO.class),
-                                    examples = @ExampleObject(value = "{'error' : 'Invalid Format'}")
+                                    schema = @Schema(implementation = HashMap.class),
+                                    examples = @ExampleObject(value = "{" +
+                                            "\"status\": \"400\"," +
+                                            "\"username\": \"The username must be between 2 and 50 characters long.\"," +
+                                            "\"password\": \"The password must be a minimum of 8 characters long and must include 1 uppercase, 1 lowercase letter, 1 special character and 1 number.\"" +
+                                            "}")
                             )
                     ),
                     @ApiResponse(responseCode = "409",
-                            description = "Returned when the email or username is taken.",
+                            description = "Returned when the username or e-mail is taken.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorDTO.class),
-                                    examples = @ExampleObject(value = "{'error' : 'Username or email is already in use.'}")
+                                    schema = @Schema(implementation = HashMap.class),
+                                    examples = @ExampleObject(value = "{" +
+                                            "\"status\": \"409\"," +
+                                            "\"username\": \"Provided username is already in use\"," +
+                                            "\"email\": \"An error occurred while processing your request. Try again later and if the error persists, contact support for further assistance.\"" +
+                                            "}")
                             )
                     ),
                     @ApiResponse(responseCode = "500",
@@ -57,7 +69,10 @@ public class RegistrationController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorDTO.class),
-                                    examples = @ExampleObject(value = "{'error' : 'An error occurred while processing your request. Please try again later.'}")
+                                    examples = @ExampleObject(value = "{" +
+                                            "\"status\": \"500\"," +
+                                            "\"message\": \"An error occurred while processing your request. Try again later and if the error persists, contact support for further assistance.\"" +
+                                            "}")
                             )
                     ),
                     @ApiResponse(responseCode = "200",
@@ -65,26 +80,40 @@ public class RegistrationController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResultDTO.class),
-                                    examples = @ExampleObject(value = "{'id' : '434715c6-3672-4a8c-9feb-f804cc585829,'" +
-                                            " 'username' : 'Adam'}")
+                                    examples = @ExampleObject(value = "{" +
+                                            "\"id\": \"2dd1090e-9d8c-4d3c-8123-fc6e82f4b4d0\"," +
+                                            "\"username\": \"Adam\"" +
+                                            "}")
                             )
                     )
             }
     )
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> registration(@Valid @RequestBody UserDTO userDTO) throws MessagingException {
+        Map<String, String> errors = new HashMap<>();
+
+        if (userService.isUsernameInUse(userDTO.getUsername())) {
+
+            errors.put("username", "This username is already in use.");
+        }
+
+        if (userService.isEmailInUse(userDTO.getEmail())) {
+
+            errors.put("email", "This e-mail is already in use.");
+        }
+
+        if (!errors.isEmpty()) {
+
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         try {
-            if (!userService.isEmailValid(userDTO.getEmail()) || !userService.isPasswordValid(userDTO.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Invalid Format"));
-            }
-            if (userService.isUsernameInUse(userDTO.getUsername()) || userService.isEmailInUse(userDTO.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username or email is already in use"));
-            }
-            return ResponseEntity.ok().body(new UserResultDTO(userService.save(userDTO).getId().toString(), userDTO.getUsername()));
+
+            User user = userService.save(userDTO);
+
+            return ResponseEntity.ok().body(new UserResultDTO(user));
         } catch (MessagingException e) {
-            System.out.println("Messaging error during registration");
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred while processing your request. Please try again later."));
+            throw new MessagingException("An error occurred while processing your request. Try again later and if the error persists, contact support for further assistance.");
         }
     }
 }

@@ -6,8 +6,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -40,11 +38,15 @@ public class LoggingFilter extends OncePerRequestFilter {
     }
 
     private String getStringValue(byte[] requestBodyAsByteArray, String characterEncoding) {
+
         try {
+
             return new String(requestBodyAsByteArray, 0, requestBodyAsByteArray.length, characterEncoding);
         } catch (UnsupportedEncodingException e) {
+
             e.printStackTrace();
         }
+
         return "";
     }
     @Override

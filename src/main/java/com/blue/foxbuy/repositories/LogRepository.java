@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 @Repository
 public interface LogRepository extends JpaRepository<Log, Long> {
-    List<Log> findByTimestamp(LocalDate date);
+    List<Log> findByTimestampBetween(LocalDateTime date1, LocalDateTime date2);
 }

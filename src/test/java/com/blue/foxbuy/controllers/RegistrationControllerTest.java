@@ -1,9 +1,10 @@
 package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.DTOs.UserDTO;
+import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
+import com.blue.foxbuy.services.ConversionService;
 import com.blue.foxbuy.services.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,33 +34,43 @@ class RegistrationControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    private ObjectMapper op;
+    @Autowired
+    ConversionService conversionService;
+
+    private UserDTO userDTO;
 
 
     @BeforeEach
     void setUp() {
-        op = new ObjectMapper();
         userRepository.deleteAll();
+
+        userDTO = new UserDTO(
+                "shimmy",
+                "Password1+-",
+                "email@example.com");
     }
 
 
     @Test
-    public void registrationEndpointSuccessful() throws Exception {
-        UserDTO userDTO = new UserDTO("shimmy", "Password1+-", "testing@gmail.com");
+    public void registrationEndpointTest_validUser_successfulAndUserPresent() throws Exception {
 
         mockMvc.perform(post("/registration")
-                        .content(op.writeValueAsString(userDTO))
+                        .content(conversionService.convertObjectToJson(userDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        List<User> users = userRepository.findAll();
+
+        assertThat(users).hasSize(1);
     }
 
     @Test
-    public void registrationEndpointUnauthorized() throws Exception {
-        UserDTO userDTO = new UserDTO("shimmy", "password", "testing@gmail.com");
+    public void registrationEndpointTest_existingUser_badRequest() throws Exception {
+        userService.save(userDTO);
 
         mockMvc.perform(post("/registration")
-                        .content(op.writeValueAsString(userDTO))
+                        .content(conversionService.convertObjectToJson(userDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,5 +1,6 @@
 package com.blue.foxbuy.models;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @NoArgsConstructor
+@Hidden
 public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
