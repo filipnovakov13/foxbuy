@@ -2,7 +2,6 @@ package com.blue.foxbuy.controllers;
 
 import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.AdCategory;
-import com.blue.foxbuy.models.DTOs.AdCategoryDTO;
 import com.blue.foxbuy.models.DTOs.AdDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
@@ -21,7 +20,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
@@ -58,12 +56,18 @@ class AdvertisementRestControllerTest {
     String email;
     User user;
 
+    AdCategory adCategory;
+
     // Purge databases before each test and initialize the variables,
     // the object mapper and then the user and save him into the database.
     @BeforeEach
     void setUp() {
         adRepository.deleteAll();
+
         userRepository.deleteAll();
+
+        adCategoryRepository.deleteAll();
+
         username = "mockuser";
         password = "mockpassword";
         email = "mockemail@example.com";
@@ -73,26 +77,33 @@ class AdvertisementRestControllerTest {
                 email,
                 true,
                 "mocktoken",
-                Role.ADMIN);
+                Role.USER);
+
         userRepository.save(user);
+
+        adCategory = new AdCategory(
+                "IT",
+                "Information technology listings");
+
+        adCategory = adCategoryRepository.save(adCategory);
     }
 
     // Ad creation test with a positive outcome
     @Test
-    @WithMockUser(username = "mockuser", roles = "USER")
-    public void createAdControllerTest_validAd_returnSuccessfulResponse() throws Exception {
+    @WithMockUser(username = "mockuser", authorities = "USER")
+    public void createAdControllerTest_validAd_created() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3);
+                adCategory.getId());
 
         // Here we check for an OK status
         MvcResult result = mockMvc.perform(post("/advertisement")
                         .content(conversionService.convertObjectToJson(adDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         // Check if the response is an ErrorDTO
@@ -100,25 +111,26 @@ class AdvertisementRestControllerTest {
 
         // Here we check whether the ad has been saved to the database
         List<Ad> ads = adRepository.findAll();
+
         assertThat(ads).hasSize(1);
     }
 
     // Ad update test with a positive outcome
     @Test
-    @WithMockUser(username = "mockuser", roles = "USER")
+    @WithMockUser(username = "mockuser", authorities = "USER")
     public void updateAdControllerTest_validAd_returnSuccessfulResponse() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3);
+                adCategory.getId());
         AdDTO updatedAdDTO = new AdDTO(
                 "Mock title update",
                 "Mock description update",
                 30001.00,
                 "54321",
-                1);
+                adCategory.getId());
 
         Ad ad = adService.saveAdDTO(adDTO, user);
 
@@ -131,20 +143,20 @@ class AdvertisementRestControllerTest {
         // Here we check whether the ad title has been updated
         List<Ad> ads = adRepository.findAll();
         Ad savedMockAd = ads.get(0);
+
         assertThat(savedMockAd.getTitle()).isEqualTo(updatedAdDTO.getTitle());
     }
 
     // Ad deletion test with a positive outcome
     @Test
-    @WithMockUser(username = "mockuser", roles = "USER")
-    public void deleteAdControllerTest_validAd_returnSuccessfulResponse() throws Exception {
+    @WithMockUser(username = "mockuser", authorities = "USER")
+    public void deleteAdControllerTest_validAd_successful() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3
-        );
+                adCategory.getId());
 
         Ad ad = adService.saveAdDTO(adDTO, user);
 
@@ -154,20 +166,21 @@ class AdvertisementRestControllerTest {
 
         // Here we check whether the ad has been deleted
         List<Ad> ads = adRepository.findAll();
+
         assertThat(ads).hasSize(0);
     }
 
     // Ad creation test with a negative outcome due to limit reached
     @Test
-    @WithMockUser(username = "mockuser", roles = "USER")
-    public void createAdControllerTest_validAd_returnForbiddenResponse() throws Exception {
+    @WithMockUser(username = "mockuser", authorities = "USER")
+    public void createAdControllerTest_validAd_forbidden() throws Exception {
         // Here we create an AdDTO
         AdDTO adDTO1 = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3);
+                adCategory.getId());
 
         // We proceed to save it thrice
         adService.saveAdDTO(adDTO1, user);
@@ -189,18 +202,19 @@ class AdvertisementRestControllerTest {
 
         // Here we check whether the ad has been saved to the database
         List<Ad> ads = adRepository.findAll();
+
         assertThat(ads).hasSize(3);
     }
 
     // Ad update test with negative outcome due to user not being the ad owner
     @Test
-    public void updateAdControllerTest_validAd_returnUnauthorizedResponse() throws Exception {
+    public void updateAdControllerTest_validAd_unauthorized() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3);
+                adCategory.getId());
         // We create and save a second user
         User user2 = new User(
                 "mockuser2",
@@ -217,7 +231,7 @@ class AdvertisementRestControllerTest {
                 "Mock description update",
                 30001.00,
                 "54321",
-                1);
+                adCategory.getId());
         // Here we save an ad as user no. 1
         Ad ad = adService.saveAdDTO(adDTO, user);
 
@@ -232,18 +246,19 @@ class AdvertisementRestControllerTest {
         // Here we check whether the ad title has not been updated
         List<Ad> ads = adRepository.findAll();
         Ad savedMockAd = ads.get(0);
+
         assertThat(savedMockAd.getTitle()).isNotEqualTo(updatedAdDTO.getTitle());
     }
 
     // Ad deletion test with a negative outcome due to user not being the ad owner
     @Test
-    public void deleteAdControllerTest_validAd_returnUnauthorizedResponse() throws Exception {
+    public void deleteAdControllerTest_validAd_unauthorized() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
                 3000.00,
                 "12345",
-                3);
+                adCategory.getId());
         User user2 = new User(
                 "mockuser2",
                 "mockpassword",
@@ -263,11 +278,12 @@ class AdvertisementRestControllerTest {
 
         // Here we assert the ad hasn't been deleted
         List<Ad> ads = adRepository.findAll();
+
         assertThat(ads).hasSize(1);
     }
 
     @Test
-    public void listAdCategoriesTest_emptyExcluded_returnSuccessfulResponse() throws Exception {
+    public void listAdCategoriesTest_emptyExcluded_successful() throws Exception {
         AdCategory adCategory1 = new AdCategory();
         AdCategory adCategory2 = new AdCategory();
 
@@ -292,25 +308,16 @@ class AdvertisementRestControllerTest {
     }
 
     @Test
-    public void listAdCategoriesTest_emptyIncluded_returnSuccessfulResponse() throws Exception {
-        AdCategory adCategory1 = new AdCategory();
-        AdCategory adCategory2 = new AdCategory();
+    public void listAdCategoriesTest_emptyIncluded_successful() throws Exception {
+        AdCategory adCategory = new AdCategory();
 
-        adCategory1.setId(1);
+        adCategory.setId(2);
 
-        adCategory2.setId(2);
+        adCategory.setName("Gadgets");
 
-        adCategory1.setName("IT");
+        adCategory.setDescription("Wearable gadgets");
 
-        adCategory2.setName("Gadgets");
-
-        adCategory1.setDescription("Information technology listings");
-
-        adCategory2.setDescription("Wearable gadgets");
-
-        adCategoryRepository.save(adCategory1);
-
-        adCategoryRepository.save(adCategory2);
+        adCategoryRepository.save(adCategory);
 
         mockMvc.perform(get("/category?empty=true"))
                 .andExpect(status().isOk());

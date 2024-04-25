@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@Schema(description = "Object used to send back JWTs to the user after successful login")
+@Schema(description = "An object used to send back JWTs to the user after a successful login.")
 public class JwtResponseDTO {
 
     @Schema(example = "eyJhbGciOiJIUzI1NiJ9." +

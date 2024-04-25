@@ -37,14 +37,14 @@ class JwtUtilServiceImplTest {
     }
 
     @Test
-    public void parseTokenTest_validAuthenticationHeader_returnValidTrue() {
+    public void parseTokenTest_validAuthenticationHeader_returnTrue() {
         String authHeader = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huIiwiaXNzIjoiRm94YnV5IiwiaWF0IjoxNzExNTQ4ODk0LCJleHAiOjE3MTE1NTI0OTR9.7DxgoiTU_c9p8fKhAGh9dVBo3XEmR4P5AIcHGAi-Q0k";
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
         assertTrue(jwtData.get("valid").equals("true"));
     }
 
     @Test
-    public void parseTokenTest_validAuthenticationHeader_returnValidFalse() {
+    public void parseTokenTest_validAuthenticationHeader_returnFalse() {
         String authHeader = "wrongToken";
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
         assertTrue(jwtData.get("valid").equals("false"));

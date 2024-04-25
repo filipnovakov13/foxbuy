@@ -54,6 +54,7 @@ class AdminRestControllerTest {
     @BeforeEach
     void setUp() {
         adRepository.deleteAll();
+
         userRepository.deleteAll();
 
         username = "mockuser";
@@ -70,8 +71,8 @@ class AdminRestControllerTest {
 
     // User ban
     @Test
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    public void banUserTest_validUser_returnSuccessfulReponse() throws Exception {
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void banUserTest_validUser_validAdmin_successful() throws Exception {
         BanDTO banDTO = new BanDTO();
 
         banDTO.setDuration(5);
@@ -80,5 +81,19 @@ class AdminRestControllerTest {
                         .content(conversionService.convertObjectToJson(banDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = "ADMIN")
+    public void banUserTest_validUser_expiredAdminToken_successful() throws Exception {
+        BanDTO banDTO = new BanDTO();
+
+        banDTO.setDuration(5);
+
+        mockMvc.perform(post( "/user/" + user.getId() + "/ban")
+                        .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI6IkZveGJ1eSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTcxMzk0NTY2MiwiZXhwIjoxNzEzOTQ5MjYyfQ.XgH6QqrVCyTqrzy-JkVJDtsPF_HPJmHo8fz3rifHuPo")
+                        .content(conversionService.convertObjectToJson(banDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 }

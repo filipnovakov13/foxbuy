@@ -1,6 +1,6 @@
 package com.blue.foxbuy.models;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,18 +13,18 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Object used for storing categories of ads")
+@Hidden
 public class AdCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Schema(example = "1")
     private Integer id;
+
     @Column(unique = true)
-    @Schema(description = "Name must be unique", example = "IT")
     private String name;
-    @Schema(example = "Technical gizmos and gadgets")
+
     private String description;
+
     @OneToMany(mappedBy = "adCategory", cascade = CascadeType.ALL)
     private List<Ad> ads;
 

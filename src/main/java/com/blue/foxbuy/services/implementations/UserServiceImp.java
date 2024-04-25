@@ -35,25 +35,6 @@ public class UserServiceImp implements UserService {
         this.tokenGenerationService = tokenGenerationService;
     }
 
-    // methods
-    @Override
-    public boolean isEmailValid(String email) {
-        String email_regex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(email_regex);
-        Matcher matcher = pattern.matcher(email);
-
-        return matcher.matches();
-    }
-
-    @Override
-    public boolean isPasswordValid(String password) {
-        String password_regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&!+=()]).{8,20}$";
-        Pattern pattern = Pattern.compile(password_regex);
-        Matcher matcher = pattern.matcher(password);
-        return matcher.matches();
-    }
-
     @Override
     public boolean isUsernameInUse(String username) {
         return userRepository.existsByUsernameIgnoreCase(username);
@@ -86,13 +67,18 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public void saveDirect(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
     public String encodedPassword(String password) {
         return passwordEncoder.encode(password);
     }
 
     @Override
     public boolean emailVerificationStatus() {
-        if (System.getenv().get("verification") != null) {               // if it's not empty -> it's turn on
+        if (System.getenv().get("verification") != null) {              // if it's not empty -> it's turn on
             return System.getenv().get("verification").equals("false"); // if it's false -> it's turn off, user should get true
         } else {
             return true;
@@ -111,10 +97,5 @@ public class UserServiceImp implements UserService {
             return user;
         }
         return Optional.empty();
-    }
-
-    @Override
-    public void saveDirect(User user) {
-        userRepository.save(user);
     }
 }

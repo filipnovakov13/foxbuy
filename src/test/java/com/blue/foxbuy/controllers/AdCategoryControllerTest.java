@@ -1,12 +1,14 @@
 package com.blue.foxbuy.controllers;
 
+import com.blue.foxbuy.models.AdCategory;
 import com.blue.foxbuy.models.DTOs.AdCategoryDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
+import com.blue.foxbuy.repositories.AdCategoryRepository;
 import com.blue.foxbuy.repositories.UserRepository;
 import com.blue.foxbuy.services.AdCategoryService;
+import com.blue.foxbuy.services.ConversionService;
 import com.blue.foxbuy.services.implementations.JwtUtilServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,113 +39,111 @@ class AdCategoryControllerTest {
     UserRepository userRepository;
 
     @Autowired
+    AdCategoryRepository adCategoryRepository;
+
+    @Autowired
     JwtUtilServiceImpl jwtUtilService;
 
-    private ObjectMapper op;
+    @Autowired
+    ConversionService conversionService;
+
+    User user;
+
+    AdCategoryDTO adCategoryDTO;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        userRepository.save(new User(
+
+        adCategoryRepository.deleteAll();
+
+        user = new User(
                 "shimmy",
                 "Password1+-",
                 "testing@seznam.cz",
                 false,
                 "emailToken",
-                Role.ADMIN));
-        op = new ObjectMapper();
+                Role.ADMIN);
+
+        userRepository.save(user);
+
+        adCategoryDTO = new AdCategoryDTO(
+                "IT",
+                "Technical gizmos and gadgets");
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void createCategorySuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+    @WithMockUser(username = "shimmy", authorities = "ADMIN")
+    void createCategory_successful() throws Exception {
 
         mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
+                        .content(conversionService.convertObjectToJson(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void createCategoryUnsuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+    @WithMockUser(username = "shimmy", authorities = "ADMIN")
+    void createCategory_conflict() throws Exception {
+
 
         mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
+                        .content(conversionService.convertObjectToJson(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
+                        .content(conversionService.convertObjectToJson(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void updateCategorySuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+    @WithMockUser(username = "shimmy", authorities = {"ADMIN"})
+    void updateCategory_successful() throws Exception {
+        AdCategory adCategory = adCategoryService.saveAdCategoryDTO(adCategoryDTO);
         AdCategoryDTO updatedAdCategoryDTO = new AdCategoryDTO("IT", "All the technical toys");
 
-        mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(put("/category/{id}", 1)
-                        .content(op.writeValueAsString(updatedAdCategoryDTO))
+        mockMvc.perform(put("/category/" + adCategory.getId(), 1)
+                        .content(conversionService.convertObjectToJson(updatedAdCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"name\":\"IT\",\"description\":\"All the technical toys\", \"id\": 1}"));
+                .andExpect(content().json("{\"id\":2,\"name\":\"IT\",\"description\":\"All the technical toys\"}"));
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void updateCategoryUnsuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
-        AdCategoryDTO updatedAdCategoryDTO = new AdCategoryDTO("IT", "All the technical toys");
+    @WithMockUser(username = "shimmy", authorities = {"ADMIN"})
+    void updateCategory_notFound() throws Exception {
+        AdCategory adCategory = adCategoryService.saveAdCategoryDTO(adCategoryDTO);
+        AdCategoryDTO updatedAdCategoryDTO = new AdCategoryDTO("Rubbish", "All types of garbage.");
 
-        mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(put("/category/{id}", 2)
-                        .content(op.writeValueAsString(updatedAdCategoryDTO))
+        mockMvc.perform(put("/category/" + "5", 2)
+                        .content(conversionService.convertObjectToJson(updatedAdCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void deleteCategorySuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+    @WithMockUser(username = "shimmy", authorities = {"ADMIN"})
+    void deleteCategory_successful() throws Exception {
+        AdCategory adCategory = adCategoryService.saveAdCategoryDTO(adCategoryDTO);
 
-        mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(delete("/category/{id}", 1)
-                        .content(op.writeValueAsString(adCategoryDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete("/category/" + adCategory.getId(), 1))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockUser(username = "shimmy", roles = {"ADMIN"})
-    void deleteCategoryUnsuccessful() throws Exception {
-        AdCategoryDTO adCategoryDTO = new AdCategoryDTO("IT", "Technical gizmos and gadgets");
+    @WithMockUser(username = "shimmy", authorities = {"ADMIN"})
+    void deleteCategory_notFound() throws Exception {
+
 
         mockMvc.perform(post("/category")
-                        .content(op.writeValueAsString(adCategoryDTO))
+                        .content(conversionService.convertObjectToJson(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(delete("/category/{id}", 2)
-                        .content(op.writeValueAsString(adCategoryDTO))
+                        .content(conversionService.convertObjectToJson(adCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
