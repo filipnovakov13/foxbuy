@@ -4,14 +4,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Object used to send back error messages to the user")
+@Schema(description = "An object used to send back verbose error messages to the user.")
 public class ErrorDTO {
 
-    @Schema(example = "Username/Ad/Category not found")
-    private String error;
+    @Schema(description = "An HTTP response status naming the nature of the error.",
+            example = "401")
+    private String status;
+
+    @Schema(description = "The actual error message associated with the status.",
+            example = "Access denied. User has been banned.")
+    private String message;
 }

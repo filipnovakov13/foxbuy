@@ -1,6 +1,8 @@
 package com.blue.foxbuy.models;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,13 +11,16 @@ import java.util.UUID;
 
 @Data
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
+@Hidden
 public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String title;
+    @Column(length = 3190)
     private String description;
     private Date creationDate;
     private Double price;
@@ -35,5 +40,6 @@ public class Ad {
         this.owner = owner;
         this.adCategory = adCategory;
         setVisible(true);
+        this.adCategory = adCategory;
     }
 }

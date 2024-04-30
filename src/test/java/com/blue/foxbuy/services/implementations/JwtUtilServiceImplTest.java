@@ -26,6 +26,10 @@ class JwtUtilServiceImplTest {
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+    }
+
+    @Test
+    public void parseTokenTest_validAuthenticationHeader_returnTrue() {
         User user = new User(
                 "john",
                 "Password1!",
@@ -34,17 +38,14 @@ class JwtUtilServiceImplTest {
                 "emailToken",
                 Role.USER);
         userRepository.save(user);
-    }
 
-    @Test
-    public void parseTokenTest_validAuthenticationHeader_returnValidTrue() {
-        String authHeader = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2huIiwiaXNzIjoiRm94YnV5IiwiaWF0IjoxNzExNTQ4ODk0LCJleHAiOjE3MTE1NTI0OTR9.7DxgoiTU_c9p8fKhAGh9dVBo3XEmR4P5AIcHGAi-Q0k";
+        String authHeader = jwtUtilService.generateJwtToken(user.getUsername());
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
         assertTrue(jwtData.get("valid").equals("true"));
     }
 
     @Test
-    public void parseTokenTest_validAuthenticationHeader_returnValidFalse() {
+    public void parseTokenTest_validAuthenticationHeader_returnFalse() {
         String authHeader = "wrongToken";
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
         assertTrue(jwtData.get("valid").equals("false"));

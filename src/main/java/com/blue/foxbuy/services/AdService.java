@@ -18,5 +18,5 @@ public interface AdService {
 
     ListOfAdsDTO getAdsByUser(String username);
 
-    ListOfAdsDTO getAdsByCategory(int categoryId, int page);
+    ListOfAdsDTO getAdsByCategory(Integer categoryId, Integer page);
 }

@@ -47,24 +47,49 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/index.html",
-                                "/swagger-ui/**",
-                                "/category")
+                                "/swagger-ui/**")
+                        .permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/advertisement", "/advertisement/**", "/category",
+                                "/category/**")
                         .permitAll()
 
                         // Endpoints accessible by admins
                         .requestMatchers("/test",
                                 "/user/*/ban",
                                 "/logs",
-                                "/category",
+                                "/auth")
+                        .hasAuthority("ADMIN")
+
+                        // Post, Put, Delete endpoints accessible by admins
+                        .requestMatchers(HttpMethod.POST, "/category",
                                 "/category/**")
                         .hasAuthority("ADMIN")
 
-                        // Specific access endpoints
-                        .requestMatchers("/advertisement", "/advertisement/**").hasAnyAuthority("ADMIN", "VIP_USER", "USER")
-                        .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/category/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/category/**").hasAuthority("ADMIN")
-                        .anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.PUT, "/category",
+                                "/category/**")
+                        .hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/category",
+                                "/category/**")
+                        .hasAuthority("ADMIN")
+
+                        // Post, Put, Delete endpoints accessible by admins and registered users
+                        .requestMatchers(HttpMethod.POST, "/advertisement",
+                                "/advertisement/**")
+                        .hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+
+                        .requestMatchers(HttpMethod.PUT, "/advertisement",
+                                "/advertisement/**")
+                        .hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+
+                        .requestMatchers(HttpMethod.DELETE, "/advertisement",
+                                "/advertisement/**")
+                        .hasAnyAuthority("ADMIN", "VIP_USER", "USER")
+
+                        .anyRequest()
+                        .authenticated())
+
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }

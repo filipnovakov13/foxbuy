@@ -1,6 +1,7 @@
 package com.blue.foxbuy.models.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Hidden
 public class BanResultDTO {
     private String username;
     @JsonProperty("banned_until")

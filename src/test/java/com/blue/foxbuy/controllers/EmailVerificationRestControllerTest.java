@@ -30,16 +30,20 @@ class EmailVerificationRestControllerTest {
     @Autowired
     UserService userService;
 
+    User user;
+
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
-        User user = new User(
+
+        user = new User(
                 "shimmy",
                 "Password1+-",
                 "testing@seznam.cz",
                 false,
                 "emailToken",
                 Role.USER);
+
         userRepository.save(user);
     }
 
@@ -48,7 +52,7 @@ class EmailVerificationRestControllerTest {
         mockMvc.perform(get("/verify-email")
                         .param("token", "emailToken"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("E-mail verified successfully"));
+                .andExpect(content().string("{\"id\":\"" + user.getId() + "\",\"username\":\"" + user.getUsername() + "\",\"message\":\"E-mail verified successfully.\"}"));
 
         User user = userRepository.findByUsername("shimmy");
         assertTrue(user.isEmailVerified());
@@ -59,7 +63,7 @@ class EmailVerificationRestControllerTest {
         mockMvc.perform(get("/verify-email")
                         .param("token", "wrongEmailToken"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Invalid verification token"));
+                .andExpect(content().string("{\"status\":\"401\",\"message\":\"Invalid verification token.\"}"));
 
         User user = userRepository.findByUsername("shimmy");
         assertFalse(user.isEmailVerified());
