@@ -52,7 +52,7 @@ class RegistrationControllerTest {
 
 
     @Test
-    public void registrationEndpointTest_validUser_successfulAndUserPresent() throws Exception {
+    void registrationEndpointTest_validUser_successfulAndUserPresent() throws Exception {
 
         mockMvc.perform(post("/registration")
                         .content(conversionService.convertObjectToJson(userDTO))
@@ -65,7 +65,7 @@ class RegistrationControllerTest {
     }
 
     @Test
-    public void registrationEndpointTest_existingUser_badRequest() throws Exception {
+    void registrationEndpointTest_existingUser_badRequest() throws Exception {
         userService.save(userDTO);
 
         mockMvc.perform(post("/registration")

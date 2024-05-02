@@ -48,7 +48,7 @@ class EmailVerificationRestControllerTest {
     }
 
     @Test
-    public void verifyEmailControllerTest_validToken_returnEmailVerifiedTrue() throws Exception {
+    void verifyEmailControllerTest_validToken_returnEmailVerifiedTrue() throws Exception {
         mockMvc.perform(get("/verify-email")
                         .param("token", "emailToken"))
                 .andExpect(status().isOk())
@@ -59,7 +59,7 @@ class EmailVerificationRestControllerTest {
     }
 
     @Test
-    public void verifyEmailControllerTest_invalidToken_returnEmailVerifiedFalse() throws Exception {
+    void verifyEmailControllerTest_invalidToken_returnEmailVerifiedFalse() throws Exception {
         mockMvc.perform(get("/verify-email")
                         .param("token", "wrongEmailToken"))
                 .andExpect(status().isUnauthorized())

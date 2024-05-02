@@ -31,8 +31,12 @@ public class AdminServiceImpl implements AdminService {
         Date banDuration = calendar.getTime();
 
         Optional<User> userOptional = userRepository.findById(id);
-        User user = userOptional.get();
+        User user = null;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        }
 
+        assert user != null;
         user.setBanned(true);
         user.setBanDate(banDuration);
 

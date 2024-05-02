@@ -18,13 +18,13 @@ public class GlobalExceptionHandler {
     // Validation exception handler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map> handleValidationExceptions(MethodArgumentNotValidException e) throws JsonProcessingException {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) throws JsonProcessingException {
 
         Map<String, String> errors = new HashMap<>();
 
         errors.put("status", "400");
 
-        e.getBindingResult().getAllErrors().forEach((error) -> {
+        e.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
 

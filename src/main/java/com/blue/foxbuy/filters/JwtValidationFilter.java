@@ -1,6 +1,5 @@
 package com.blue.foxbuy.filters;
 
-import com.blue.foxbuy.models.DTOs.ErrorDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
 import io.jsonwebtoken.Claims;

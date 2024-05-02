@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class LoginControllerTest {
+class LoginControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -61,7 +61,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void loginEndpointTest_validUserCredentials_successful() throws Exception {
+    void loginEndpointTest_validUserCredentials_successful() throws Exception {
 
         mockMvc.perform(post("/login")
                         .content(conversionService.convertObjectToJson(userDTO))
@@ -70,7 +70,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void loginEndpointTest_invalidUserCredentials_notFound() throws Exception {
+    void loginEndpointTest_invalidUserCredentials_notFound() throws Exception {
         userDTO.setUsername("negaShimmy");
 
         mockMvc.perform(post("/login")
@@ -81,7 +81,7 @@ public class LoginControllerTest {
 
     @Test
     @WithMockUser(username = "shimmy", authorities = "ADMIN")
-    public void testEndpointTest_validUser_successfulAndCorrectContent() throws Exception {
+    void testEndpointTest_validUser_successfulAndCorrectContent() throws Exception {
 
         MvcResult loginResult = mockMvc.perform(post("/login")
                         .contentType("application/json")
@@ -103,7 +103,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testEndpointTest_missingJwt_unauthorized() throws Exception {
+    void testEndpointTest_missingJwt_unauthorized() throws Exception {
 
         mockMvc.perform(get("/test")
                         .content(conversionService.convertObjectToJson(userDTO)))

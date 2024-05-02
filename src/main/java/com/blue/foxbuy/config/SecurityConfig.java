@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtValidationFilter(userRepository), BasicAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(conversionService), JwtValidationFilter.class)
                 .addFilterAfter(new LoggingFilter(logRepository), JwtValidationFilter.class)
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests(requests -> requests
                         // Endpoints accessible by everyone
                         .requestMatchers("/registration",
                                 "/login",

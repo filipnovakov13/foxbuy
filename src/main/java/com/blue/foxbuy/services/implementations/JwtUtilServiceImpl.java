@@ -53,7 +53,7 @@ public class JwtUtilServiceImpl implements JwtUtilService {
         // String for the JWT that we are going to extract
         Claims claims;
         Map<String, String> jwtData = new HashMap<>();
-        String jwt = null;
+        String jwt;
 
         // JWT extraction
         if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")) {

@@ -91,7 +91,7 @@ class AdvertisementRestControllerTest {
     // Ad creation test with a positive outcome
     @Test
     @WithMockUser(username = "mockuser", authorities = "USER")
-    public void createAdControllerTest_validAd_created() throws Exception {
+    void createAdControllerTest_validAd_created() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
@@ -118,7 +118,7 @@ class AdvertisementRestControllerTest {
     // Ad update test with a positive outcome
     @Test
     @WithMockUser(username = "mockuser", authorities = "USER")
-    public void updateAdControllerTest_validAd_returnSuccessfulResponse() throws Exception {
+    void updateAdControllerTest_validAd_returnSuccessfulResponse() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
@@ -150,7 +150,7 @@ class AdvertisementRestControllerTest {
     // Ad deletion test with a positive outcome
     @Test
     @WithMockUser(username = "mockuser", authorities = "USER")
-    public void deleteAdControllerTest_validAd_successful() throws Exception {
+    void deleteAdControllerTest_validAd_successful() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
@@ -167,13 +167,13 @@ class AdvertisementRestControllerTest {
         // Here we check whether the ad has been deleted
         List<Ad> ads = adRepository.findAll();
 
-        assertThat(ads).hasSize(0);
+        assertThat(ads).isEmpty();
     }
 
     // Ad creation test with a negative outcome due to limit reached
     @Test
     @WithMockUser(username = "mockuser", authorities = "USER")
-    public void createAdControllerTest_validAd_forbidden() throws Exception {
+    void createAdControllerTest_validAd_forbidden() throws Exception {
         // Here we create an AdDTO
         AdDTO adDTO1 = new AdDTO(
                 "Mock title",
@@ -208,7 +208,7 @@ class AdvertisementRestControllerTest {
 
     // Ad update test with negative outcome due to user not being the ad owner
     @Test
-    public void updateAdControllerTest_validAd_unauthorized() throws Exception {
+    void updateAdControllerTest_validAd_unauthorized() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
@@ -252,7 +252,7 @@ class AdvertisementRestControllerTest {
 
     // Ad deletion test with a negative outcome due to user not being the ad owner
     @Test
-    public void deleteAdControllerTest_validAd_unauthorized() throws Exception {
+    void deleteAdControllerTest_validAd_unauthorized() throws Exception {
         AdDTO adDTO = new AdDTO(
                 "Mock title",
                 "Mock description",
@@ -283,7 +283,7 @@ class AdvertisementRestControllerTest {
     }
 
     @Test
-    public void listAdCategoriesTest_emptyExcluded_successful() throws Exception {
+    void listAdCategoriesTest_emptyExcluded_successful() throws Exception {
         AdCategory adCategory2 = new AdCategory();
         AdCategory adCategory3 = new AdCategory();
 
@@ -304,7 +304,7 @@ class AdvertisementRestControllerTest {
     }
 
     @Test
-    public void listAdCategoriesTest_emptyIncluded_successful() throws Exception {
+    void listAdCategoriesTest_emptyIncluded_successful() throws Exception {
         AdCategory adCategory = new AdCategory();
 
         adCategory.setId(2);

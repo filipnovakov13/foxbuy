@@ -1,6 +1,6 @@
 package com.blue.foxbuy.controllers;
 
-import com.blue.foxbuy.models.Ad;
+
 import com.blue.foxbuy.models.DTOs.BanDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
@@ -44,12 +44,7 @@ class AdminRestControllerTest {
     String username;
     String password;
     String email;
-    String usernameAdmin;
-    String passwordAdmin;
-    String emailAdmin;
     User user;
-    User admin;
-    Ad ad;
 
     @BeforeEach
     void setUp() {
@@ -72,7 +67,7 @@ class AdminRestControllerTest {
     // User ban
     @Test
     @WithMockUser(username = "admin", authorities = "ADMIN")
-    public void banUserTest_validUser_validAdmin_successful() throws Exception {
+    void banUserTest_validUser_validAdmin_successful() throws Exception {
         BanDTO banDTO = new BanDTO();
 
         banDTO.setDuration(5);
@@ -85,7 +80,7 @@ class AdminRestControllerTest {
 
     @Test
     @WithMockUser(username = "admin", authorities = "ADMIN")
-    public void banUserTest_validUser_expiredAdminToken_successful() throws Exception {
+    void banUserTest_validUser_expiredAdminToken_successful() throws Exception {
         BanDTO banDTO = new BanDTO();
 
         banDTO.setDuration(5);
