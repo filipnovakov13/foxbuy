@@ -178,7 +178,7 @@ public class LoginController {
 
     @GetMapping("/auth")
     @Hidden
-    public ResponseEntity<?> userIdentityCheck(@RequestHeader(value = "authorization", required = true) String authenticationHeader) {
+    public ResponseEntity<?> userIdentityCheck(@RequestHeader(value = "authorization") String authenticationHeader) {
         Map<String, String> tokenDetails = jwtUtilService.parseToken(authenticationHeader);
 
         if (tokenDetails.get("valid").equals("false")) {

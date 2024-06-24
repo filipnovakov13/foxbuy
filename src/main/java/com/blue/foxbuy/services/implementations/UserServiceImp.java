@@ -1,6 +1,8 @@
 package com.blue.foxbuy.services.implementations;
 
+import com.blue.foxbuy.models.DTOs.AdResultDTO;
 import com.blue.foxbuy.models.DTOs.UserDTO;
+import com.blue.foxbuy.models.DTOs.UserDetailsDTO;
 import com.blue.foxbuy.models.Role;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.UserRepository;
@@ -13,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -23,12 +27,15 @@ public class UserServiceImp implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenGenerationService tokenGenerationService;
 
+    private final AdServiceImp adServiceImp;
+
     @Autowired
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, TokenGenerationService tokenGenerationService) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, TokenGenerationService tokenGenerationService, AdServiceImp adServiceImp) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.tokenGenerationService = tokenGenerationService;
+        this.adServiceImp = adServiceImp;
     }
 
     @Override
@@ -99,6 +106,20 @@ public class UserServiceImp implements UserService {
 
         if (user.isPresent() && passwordEncoder.matches(userDTO.getPassword(), user.get().getPassword())) {
             return user;
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<UserDetailsDTO> findById(UUID id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            List<AdResultDTO> userAds = adServiceImp.getAdResultsByUser(user.get().getUsername());
+            UserDetailsDTO userDetails = new UserDetailsDTO(user.get().getUsername(),
+                                                            user.get().getEmail(),
+                                                            user.get().getRole(),
+                                                            userAds);
+            return Optional.of(userDetails);
         }
         return Optional.empty();
     }

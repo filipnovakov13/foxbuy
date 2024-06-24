@@ -1,6 +1,7 @@
 package com.blue.foxbuy.repositories;
 
 import com.blue.foxbuy.models.Ad;
+import com.blue.foxbuy.models.DTOs.AdResultDTO;
 import com.blue.foxbuy.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;

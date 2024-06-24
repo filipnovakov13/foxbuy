@@ -2,6 +2,7 @@ package com.blue.foxbuy.services.implementations;
 
 import com.blue.foxbuy.models.Ad;
 import com.blue.foxbuy.models.DTOs.AdDTO;
+import com.blue.foxbuy.models.DTOs.AdResultDTO;
 import com.blue.foxbuy.models.DTOs.ListOfAdsDTO;
 import com.blue.foxbuy.models.User;
 import com.blue.foxbuy.repositories.AdRepository;
@@ -9,6 +10,7 @@ import com.blue.foxbuy.services.AdCategoryService;
 import com.blue.foxbuy.services.AdService;
 import com.blue.foxbuy.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class AdServiceImp implements AdService {
     private final UserService userService;
 
     @Autowired
-    public AdServiceImp(AdRepository adRepository, AdCategoryService adCategoryService, UserService userService) {
+    public AdServiceImp(AdRepository adRepository, AdCategoryService adCategoryService, @Lazy UserService userService) {
         this.adRepository = adRepository;
         this.adCategoryService = adCategoryService;
         this.userService = userService;
@@ -70,6 +72,17 @@ public class AdServiceImp implements AdService {
         ListOfAdsDTO list = new ListOfAdsDTO();
         for (Ad ad : ads) {
             list.add(ad);
+        }
+        return list;
+    }
+
+    public List<AdResultDTO> getAdResultsByUser(String username) {
+
+        List<Ad> ads = adRepository.findAllByOwner(userService.findByUsername(username));
+        List<AdResultDTO> list = new ArrayList<>();
+        for (Ad ad : ads) {
+            AdResultDTO adResult = new AdResultDTO(ad);
+            list.add(adResult);
         }
         return list;
     }

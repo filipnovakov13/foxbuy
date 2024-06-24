@@ -41,7 +41,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         try {
 
-            return new String(requestBodyAsByteArray, 0, requestBodyAsByteArray.length, characterEncoding);
+            return new String(requestBodyAsByteArray, characterEncoding);
         } catch (UnsupportedEncodingException e) {
 
             e.printStackTrace();
