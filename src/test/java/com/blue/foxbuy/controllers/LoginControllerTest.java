@@ -71,7 +71,7 @@ class LoginControllerTest {
 
     @Test
     void loginEndpointTest_invalidUserCredentials_notFound() throws Exception {
-        userDTO.setUsername("negaShimmy");
+        userDTO.setUsername("notShimmy");
 
         mockMvc.perform(post("/login")
                         .content(conversionService.convertObjectToJson(userDTO))

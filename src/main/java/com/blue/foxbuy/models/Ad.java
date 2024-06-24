@@ -40,6 +40,5 @@ public class Ad {
         this.owner = owner;
         this.adCategory = adCategory;
         setVisible(true);
-        this.adCategory = adCategory;
     }
 }

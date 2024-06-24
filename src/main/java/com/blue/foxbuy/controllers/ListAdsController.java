@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 @RestController
@@ -27,7 +26,7 @@ public class ListAdsController {
     @Operation(
             description = "Finds an ad based on an id.",
             summary = "Finds ad.",
-            method = "POST",
+            method = "GET",
             responses = {
                     @ApiResponse(responseCode = "400",
                             description = "Returned when the id doesn't match any ad id's in the database.",
@@ -45,13 +44,15 @@ public class ListAdsController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResultDTO.class),
-                                    examples = @ExampleObject(value = "{\n" +
-                                            "    \"title\": \"iPhone 15 Pro Max 1TB\",\n" +
-                                            "    \"description\": \"Selling my 2 months old iPhone. 22 month warranty. Original box included.\",\n" +
-                                            "    \"price\": 41000.0,\n" +
-                                            "    \"zipcode\": \"12345\",\n" +
-                                            "    \"categoryID\": 1\n" +
-                                            "}")
+                                    examples = @ExampleObject(value = """
+                                            {
+                                            "title": "iPhone 15 Pro Max 1TB",
+                                            "description": "Selling my 2 months old iPhone. 22 month warranty. Original box included.",
+                                            "price": 41000.0,
+                                            "zipcode": "12345",
+                                            "categoryID": 1
+                                            }
+                                            """)
                             )
                     )
             }

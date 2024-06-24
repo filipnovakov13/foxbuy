@@ -49,7 +49,7 @@ class UserServiceImpTest {
     void isEmailInUse() {
         assertTrue(userService.isEmailInUse("testing@seznam.cz"));      // it is
         assertTrue(userService.isEmailInUse("Testing@seznam.cz"));      // it is, ignoring case
-        assertFalse(userService.isEmailInUse("gay@seznam.cz"));         // it is not
+        assertFalse(userService.isEmailInUse("not@seznam.cz"));         // it is not
     }
 
     @Test

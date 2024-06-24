@@ -29,7 +29,7 @@ class JwtUtilServiceImplTest {
     }
 
     @Test
-    public void parseTokenTest_validAuthenticationHeader_returnTrue() {
+    void parseTokenTest_validAuthenticationHeader_returnTrue() {
         User user = new User(
                 "john",
                 "Password1!",
@@ -41,13 +41,13 @@ class JwtUtilServiceImplTest {
 
         String authHeader = jwtUtilService.generateJwtToken(user.getUsername());
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
-        assertTrue(jwtData.get("valid").equals("true"));
+        assertEquals("true", jwtData.get("valid"));
     }
 
     @Test
-    public void parseTokenTest_validAuthenticationHeader_returnFalse() {
+    void parseTokenTest_validAuthenticationHeader_returnFalse() {
         String authHeader = "wrongToken";
         Map<String, String> jwtData = jwtUtilService.parseToken(authHeader);
-        assertTrue(jwtData.get("valid").equals("false"));
+        assertEquals("false", jwtData.get("valid"));
     }
 }

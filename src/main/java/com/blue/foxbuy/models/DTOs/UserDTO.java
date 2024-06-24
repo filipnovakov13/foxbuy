@@ -21,7 +21,7 @@ public class UserDTO {
     @Schema(description = "The password must be a minimum of 8 characters long and must include 1 uppercase, 1 lowercase letter, 1 special character and 1 number.",
             example = "Anything1!")
     @NotBlank(message = "The password cannot be blank.")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&!+=()]).{8,20}$",
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&!+=()]).{8,20}$",
             message = "The password must be a minimum of 8 characters long and must include 1 uppercase, 1 lowercase letter, 1 special character and 1 number.")
     private String password;
 
